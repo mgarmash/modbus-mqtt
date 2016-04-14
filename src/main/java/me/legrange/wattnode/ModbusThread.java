@@ -15,62 +15,71 @@
  */
 package me.legrange.wattnode;
 
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import me.legrange.modbus.ModbusException;
-import me.legrange.modbus.ModbusListener;
-import me.legrange.modbus.SerialModbus;
-import me.legrange.modbus.tiny.SerialException;
-import me.legrange.modbus.tiny.TinyMaster;
+import me.legrange.modbus.RequestFrame;
+import me.legrange.modbus.ResponseFrame;
+import me.legrange.modbus.SerialModbusPort;
+
+
 
 /**
  *
  * @since 1.0
  * @author Gideon le Grange https://github.com/GideonLeGrange
  */
-public class ModbusThread implements Runnable, ModbusListener {
+public class ModbusThread implements Runnable {
 
-    public ModbusThread(String port, int speed, Service service) throws SerialException {
+    public ModbusThread(String port, int speed, Service service) throws ServiceException {
         this.port = port;
         this.speed = speed;
         this.service = service;
         try {
             initModbus();
         }
-        catch (SerialException e) {
-            throw new SerialException(e.getMessage(), e);
+        catch (ModbusException e) {
+            throw new ServiceException(e.getMessage(), e);
         }
+        Thread thread = new Thread(this);
+        thread.setDaemon(true);
+        thread.start();
     }
     
-    @Override
-    public void receive(int addr, byte[] data) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void error(Throwable e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
     @Override
     public void run() {
         running = true;
         while (running) {
+            try {
+                RequestFrame req = queue.take();
+                ResponseFrame res = modbus.poll(req);
+                if (!res.isError()) {
+                }
+            } catch (ModbusException ex) {
+                Logger.getLogger(ModbusThread.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(ModbusThread.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
     }
 
     public void queueRequest(int slaveId, int reg, int size) throws ModbusException {
-        modbus.reqeust(slaveId, reg, size);
+       queue.add(new RequestFrame(slaveId, reg, size));
     }
 
-    private void initModbus() throws SerialException {
-        modbus = new TinyMaster(port, speed);
-        modbus.addListener(this);
+    private void initModbus() throws ModbusException {
+        modbus = SerialModbusPort.open(port, speed);
     }
 
     private final String port;
     private final int speed;
     private boolean running;
-    private SerialModbus modbus;
+    private SerialModbusPort modbus;
     private final Service service;
+    private final LinkedBlockingQueue<RequestFrame> queue = new LinkedBlockingQueue<>();
+
 
 }

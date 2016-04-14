@@ -13,8 +13,13 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>modbus</artifactId>
+            <artifactId>modbus-rtu</artifactId>
             <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.11</version>
         </dependency>
     </dependencies>
     <properties>

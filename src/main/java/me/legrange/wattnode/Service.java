@@ -2,7 +2,7 @@ package me.legrange.wattnode;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import me.legrange.modbus.tiny.SerialException;
+
 
 /**
  *
@@ -22,7 +22,7 @@ public class Service {
         
     }
     
-    private void start() throws SerialException { 
+    private void start() throws ServiceException { 
         running = true;
         startMqtt();
         startModbus();
@@ -34,7 +34,7 @@ public class Service {
         pool.submit(mqtt);
     } 
     
-    private void startModbus() throws SerialException {
+    private void startModbus() throws ServiceException {
         mbus = new ModbusThread(port, speed, this);
         pool.submit(mbus);
     }
@@ -43,7 +43,7 @@ public class Service {
         say("service running");
         while (running) {
             try {
-                Thread.sleep(500);
+                Thread.sleep(60000);
             } catch (InterruptedException ex) {
             }
         }
@@ -76,7 +76,7 @@ public class Service {
     private ModbusThread mbus;
     private final ExecutorService pool = Executors.newCachedThreadPool();
     private final String broker = "tcp://192.168.1.5:1883";
-    private final String port = "/dev/ttyUSB0";
+    private final String port = "/dev/tty.usbserial-A900fzi7";
     private final int speed = 9600;
     
 }
