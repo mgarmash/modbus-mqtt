@@ -1,0 +1,4 @@
+Version: 1.0
+Released: Thu Nov 29 19:00:00 EST 2012
+Supported protocols: [http, https]
+Users: {tom=passwd, bob=passwd}
