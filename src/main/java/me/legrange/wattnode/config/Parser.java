@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package me.legrange.wattnode;
+package me.legrange.wattnode.config;
 
 /**
  *
@@ -28,11 +28,11 @@ import java.nio.file.Paths;
 
 import org.yaml.snakeyaml.Yaml;
 
-public class YamlConfigRunner {
+public class Parser {
     public static void main(String[] args) throws IOException {
    
         Yaml yaml = new Yaml();  
-        try( InputStream in = Files.newInputStream( Paths.get( "test.yaml" ) ) ) {
+        try( InputStream in = Files.newInputStream( Paths.get( "config.yml" ) ) ) {
             Configuration config = yaml.loadAs( in, Configuration.class );
             System.out.println( config.toString() );
         }
