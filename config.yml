@@ -20,8 +20,8 @@ mqtt: {
 
 # Define the registers to read. 
 # - The name is meant to be human readable and serves as MQTT path 
-# - The address and lenght map directly to Modbus register and length 
-# - transform (optional): a mathamatical expression used to transform the received value,
+# - The address and legnth map directly to Modbus register and length 
+# - transform (optional): a mathematical expression used to transform the received value,
 #   with '_' used to subsitute the value received from Modbus.
 registers: [
     { 
