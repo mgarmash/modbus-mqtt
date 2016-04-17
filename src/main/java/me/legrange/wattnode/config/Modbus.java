@@ -1,58 +1,55 @@
 package me.legrange.wattnode.config;
 
-import static java.text.MessageFormat.format;
-
 /**
+ * Modbus configuration
  *
  * @author gideon
  */
 public class Modbus {
+
+
+    /**
+     * Get the value of serial
+     *
+     * @return the value of serial
+     */
+    public Serial getSerial() {
+        return serial;
+    }
+
+    /**
+     * Set the value of serial
+     *
+     * @param serial new value of serial
+     */
+    public void setSerial(Serial serial) {
+        this.serial = serial;
+    }
+
+    public int getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(int deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    public int getPollInterval() {
+        return pollInterval;
+    }
+
+    public void setPollInterval(int pollInterval) {
+        this.pollInterval = pollInterval;
+    }
+
     
-    private int serialSpeed;
-
-    /**
-     * Get the value of serialSpeed
-     *
-     * @return the value of serialSpeed
-     */
-    public int getSerialSpeed() {
-        return serialSpeed;
+    void validate() throws ConfigurationException { 
+        if (serial == null) throw new ConfigurationException("No serial configuration under modbus");
+        serial.validate();
     }
+    
 
-    /**
-     * Set the value of serialSpeed
-     *
-     * @param serialSpeed new value of serialSpeed
-     */
-    public void setSerialSpeed(int serialSpeed) {
-        this.serialSpeed = serialSpeed;
-    }
-
-    private String serialPort;
-
-    /**
-     * Get the value of serialPort
-     *
-     * @return the value of serialPort
-     */
-    public String getSerialPort() {
-        return serialPort;
-    }
-
-    /**
-     * Set the value of serialPort
-     *
-     * @param serialPort new value of serialPort
-     */
-    public void setSerialPort(String serialPort) {
-        this.serialPort = serialPort;
-    }
-    @Override
-    public String toString() {
-        return new StringBuilder()
-                .append(format("Serial port: %s", serialPort))
-                .append(format("Serial speed: %d", serialSpeed))
-                .toString();
-    }
-
+    private Serial serial;
+    private int deviceId = 1;
+    private int pollInterval = 60;
 }

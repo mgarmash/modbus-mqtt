@@ -30,9 +30,9 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
  * @since 1.0
  * @author Gideon le Grange https://github.com/GideonLeGrange
  */
-public class MqttThread implements Runnable, MqttCallback {
+public class MqttWriter implements Runnable, MqttCallback {
 
-    public MqttThread(String broker, Service service) {
+    public MqttWriter(String broker, WattNodeService service) {
         this.broker = broker;
         this.service = service;
     }
@@ -47,7 +47,7 @@ public class MqttThread implements Runnable, MqttCallback {
             mqtt.connect(opts);
             mqtt.setCallback(this);
         } catch (MqttException ex) {
-            Logger.getLogger(MqttThread.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MqttWriter.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
@@ -64,30 +64,36 @@ public class MqttThread implements Runnable, MqttCallback {
                 mqtt.connect();
                 say("MQTT re-connected");
             } catch (InterruptedException ex) {
-                Logger.getLogger(MqttThread.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(MqttWriter.class.getName()).log(Level.SEVERE, null, ex);
             } catch (MqttException ex) {
                 say("MQTT reconnection error [%s]", ex.getMessage());
             }
         }
     }
-    
-    public void stop() { 
+
+    public void start() {
+        Thread t = new Thread(this, "MQTT updater");
+        t.setDaemon(true);
+        t.start();
+    }
+
+    public void stop() {
         running = false;
-        if (mqtt.isConnected()) { 
+        if (mqtt.isConnected()) {
             say("MQTT disconnected");
             try {
                 mqtt.disconnect();
             } catch (MqttException ex) {
-                Logger.getLogger(MqttThread.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(MqttWriter.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
-    
+
     public void publish(String topic, String msg) {
-        try {   
+        try {
             mqtt.publish(topic, new MqttMessage(msg.getBytes()));
         } catch (MqttException ex) {
-            Logger.getLogger(MqttThread.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MqttWriter.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -106,6 +112,6 @@ public class MqttThread implements Runnable, MqttCallback {
     private boolean running;
     private MqttClient mqtt;
     private final String broker;
-    private final Service service;
+    private final WattNodeService service;
 
 }

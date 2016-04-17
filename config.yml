@@ -1,12 +1,42 @@
 
+# Configure serial modbus. 
 modbus: {
-        serialPort: /dev/ttyUSB0,
-        serialSpeed: 9600
+    serial: { 
+        port: /dev/tty.usbserial-A900fzi7,
+        speed: 9600
+    }, 
+    deviceId: 1,
+    pollInterval: 10
 }
 
+# Setup the MQTT broker 
 mqtt: {
     broker: {  
         host: 192.168.1.5,
-        port: 1833
+        port: 1883
+    }, 
+    topic: wattnode
+}   
+
+# Define the registers to read. 
+# - The name is meant to be human readable and serves as MQTT path 
+# - The address and lenght map directly to Modbus register and length 
+# - transform (optional): a mathamatical expression used to transform the received value,
+#   with '_' used to subsitute the value received from Modbus.
+registers: [
+    { 
+        name: frequency,
+        address: 1220,
+        length: 1,
+        transform: (_/10.0)
+    }, 
+    { 
+        name: voltage,
+        address: 1213,
+        length: 1,
+        transform: (_/10.0)
     }
-}    
+]
+
+    
+

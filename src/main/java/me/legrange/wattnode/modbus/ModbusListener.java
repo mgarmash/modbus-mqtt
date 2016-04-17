@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-package me.legrange.wattnode;
+package me.legrange.wattnode.modbus;
+
+import me.legrange.wattnode.config.Register;
 
 /**
  *
  * @since 1.0
  * @author Gideon le Grange https://github.com/GideonLeGrange
  */
-public class ModbusReaderException extends ServiceException {
-
-    public ModbusReaderException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public ModbusReaderException(String message) {
-        super(message);
-    }
+public interface ModbusListener {
     
+    void received(Register reg, int word[]);
+    
+    void error(Throwable e);
 
 }

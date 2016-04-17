@@ -8,8 +8,6 @@ import static java.lang.String.format;
  */
 public class Mqtt {
 
-    private Broker broker;
-
     public Broker getBroker() {
         return broker;
     }
@@ -18,69 +16,20 @@ public class Mqtt {
         this.broker = broker;
     }
 
-    public static class Broker {
-
-        public Broker() {
-        }
-        
-        
-
-        private int port;
-
-        /**
-         * Get the value of port
-         *
-         * @return the value of port
-         */
-        public int getPort() {
-            return port;
-        }
-
-        /**
-         * Set the value of port
-         *
-         * @param port new value of port
-         */
-        public void setPort(int port) {
-            this.port = port;
-        }
-
-        private String host;
-
-        /**
-         * Get the value of host
-         *
-         * @return the value of host
-         */
-        public String getHost() {
-            return host;
-        }
-
-        /**
-         * Set the value of host
-         *
-         * @param host new value of host
-         */
-        public void setHost(String host) {
-            this.host = host;
-        }
-        
-            @Override
-    public String toString() {
-        return new StringBuilder()
-                .append(format("Host: %s", host))
-                .append(format("Port: %s", port))
-                .toString();
+    public String getTopic() {
+        return topic;
     }
 
-
+    public void setTopic(String topic) {
+        this.topic = topic;
     }
-    
-        @Override
-    public String toString() {
-        return new StringBuilder()
-                .append(broker).toString();
+  
+    void validate() throws ConfigurationException { 
+        if (broker == null) throw new ConfigurationException("MQTT broker not configured");
+        broker.validate();
+        if (topic == null) throw new ConfigurationException("MQTT topic for publishing data not configured");
     }
 
-
+    private Broker broker;
+    private String topic; 
 }

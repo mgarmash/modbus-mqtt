@@ -16,25 +16,23 @@
 
 package me.legrange.wattnode.config;
 
+import me.legrange.wattnode.ServiceException;
+
 /**
- *
+ * Thrown if there is a problem with the application configuration. 
+ * 
  * @since 1.0
  * @author Gideon le Grange https://github.com/GideonLeGrange
  */
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+public class ConfigurationException extends ServiceException {
 
-import org.yaml.snakeyaml.Yaml;
-
-public class Parser {
-    public static void main(String[] args) throws IOException {
-   
-        Yaml yaml = new Yaml();  
-        try( InputStream in = Files.newInputStream( Paths.get( "config.yml" ) ) ) {
-            Configuration config = yaml.loadAs( in, Configuration.class );
-            System.out.println( config.toString() );
-        }
+    public ConfigurationException(String message) {
+        super(message);
     }
+
+    public ConfigurationException(String message, Throwable cause) {
+        super(message, cause);
+    }
+    
+    
 }
