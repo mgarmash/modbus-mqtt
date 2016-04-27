@@ -6,7 +6,7 @@ modbus: {
         speed: 9600
     }, 
     deviceId: 1,
-    pollInterval: 10
+    pollInterval: 60
 }
 
 # Setup the MQTT broker 

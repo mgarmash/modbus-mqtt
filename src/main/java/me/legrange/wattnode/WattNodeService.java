@@ -1,7 +1,5 @@
 package me.legrange.wattnode;
 
-import java.util.Arrays;
-import java.util.Date;
 import me.legrange.wattnode.modbus.ModbusReader;
 import me.legrange.wattnode.config.Configuration;
 import me.legrange.wattnode.config.ConfigurationException;
