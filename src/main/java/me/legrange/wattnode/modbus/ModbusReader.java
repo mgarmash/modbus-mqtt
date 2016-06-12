@@ -32,12 +32,12 @@ import me.legrange.wattnode.config.Register;
  */
 public class ModbusReader implements Runnable {
 
-    public ModbusReader(String port, int speed, int deviceId) throws ServiceException {
+    public ModbusReader(String port, int speed, int deviceId) throws ModbusReaderException {
         this.deviceId = deviceId;
         try {
             initModbus(port, speed);
         } catch (ModbusException e) {
-            throw new ServiceException(e.getMessage(), e);
+            throw new ModbusReaderException(e.getMessage(), e);
         }
     }
 

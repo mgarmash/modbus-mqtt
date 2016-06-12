@@ -5,6 +5,7 @@ import me.legrange.wattnode.config.Configuration;
 import me.legrange.wattnode.config.ConfigurationException;
 import me.legrange.wattnode.config.Register;
 import me.legrange.wattnode.modbus.ModbusListener;
+import me.legrange.wattnode.modbus.ModbusReaderException;
 
 /**
  *
@@ -19,20 +20,38 @@ public class WattNodeService {
             System.out.println("Confiugration file name required");
             System.exit(-1);
         }
-        s.configure(args[0]);
-        s.start();
-        s.run();
-
+        try {
+            s.configure(args[0]);
+            s.start();
+            s.run();
+        }
+        catch (ConfigurationException ex) {
+            System.out.printf("Configuration error: %s\n", ex.getMessage());
+        }
+        catch (ModbusReaderException ex) {
+            System.out.printf("Error connecting to Modbus: %s\n", ex.getMessage());
+        }
     }
 
+    /** 
+     * Default private constructor
+     */
     private WattNodeService() {
-
     }
 
+    /** 
+     * Configure the application. 
+     * @param fileName The configuration file to parse.
+     * @throws ConfigurationException Indicates there is a error in the configuration. 
+     */
     private void configure(String fileName) throws ConfigurationException {
         this.config = Configuration.readConfiguration(fileName);
     }
 
+    /** 
+     * Start the service. 
+     * @throws ServiceException 
+     */
     private void start() throws ServiceException {
         running = true;
         startMqtt();
@@ -40,12 +59,13 @@ public class WattNodeService {
         say("service started");
     }
 
+    /** Connect to the MQTT broker */
     private void startMqtt() {
         mqtt = new MqttWriter(String.format("tcp://%s:%d", config.getMqtt().getBroker().getHost(), config.getMqtt().getBroker().getPort()), this);
         mqtt.start();
     }
 
-    private void startModbus() throws ServiceException {
+    private void startModbus() throws ModbusReaderException {
         mbus = new ModbusReader(config.getModbus().getSerial().getPort(), config.getModbus().getSerial().getSpeed(), config.getModbus().getDeviceId());
         mbus.addListener(new ModbusListener() {
 
@@ -107,4 +127,5 @@ public class WattNodeService {
     private MqttWriter mqtt;
     private ModbusReader mbus;
     private Configuration config;
+    
 }
