@@ -35,7 +35,13 @@ registers: [
         address: 1213,
         length: 1,
         transform: (_/10.0)
-    }
+    }, 
+    {
+        name: energy,
+        address: 1201,
+        length: 1, 
+        transform: (_/10.0)
+     }
 ]
 
     
