@@ -22,7 +22,6 @@ import me.legrange.modbus.ModbusException;
 import me.legrange.modbus.RequestFrame;
 import me.legrange.modbus.ResponseFrame;
 import me.legrange.modbus.SerialModbusPort;
-import me.legrange.wattnode.ServiceException;
 import me.legrange.wattnode.config.Register;
 
 /**

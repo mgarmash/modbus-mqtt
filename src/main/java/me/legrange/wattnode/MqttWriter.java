@@ -54,19 +54,19 @@ public class MqttWriter implements Runnable, MqttCallback {
 
     @Override
     public void connectionLost(Throwable e) {
-        say("MQTT connection lost [%s]", e.getMessage());
+        WattNodeService.warn("MQTT connection lost [%s]", e.getMessage());
         long time = 2500;
         int count = 0;
         while (!mqtt.isConnected()) {
             try {
                 Thread.sleep(time);
-                say("MQTT re-connecting");
+                WattNodeService.info("MQTT re-connecting");
                 mqtt.connect();
-                say("MQTT re-connected");
+                WattNodeService.info("MQTT re-connected");
             } catch (InterruptedException ex) {
                 Logger.getLogger(MqttWriter.class.getName()).log(Level.SEVERE, null, ex);
             } catch (MqttException ex) {
-                say("MQTT reconnection error [%s]", ex.getMessage());
+                WattNodeService.error("MQTT reconnection error: "  + ex.getMessage(), ex);
             }
         }
     }
@@ -80,7 +80,7 @@ public class MqttWriter implements Runnable, MqttCallback {
     public void stop() {
         running = false;
         if (mqtt.isConnected()) {
-            say("MQTT disconnected");
+            WattNodeService.info("MQTT disconnected");
             try {
                 mqtt.disconnect();
             } catch (MqttException ex) {
@@ -103,10 +103,6 @@ public class MqttWriter implements Runnable, MqttCallback {
 
     @Override
     public void deliveryComplete(IMqttDeliveryToken imdt) {
-    }
-
-    private void say(String fmt, Object... args) {
-        service.say(fmt, args);
     }
 
     private boolean running;

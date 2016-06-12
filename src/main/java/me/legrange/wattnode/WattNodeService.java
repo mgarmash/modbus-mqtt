@@ -1,5 +1,7 @@
 package me.legrange.wattnode;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import me.legrange.wattnode.modbus.ModbusReader;
 import me.legrange.wattnode.config.Configuration;
 import me.legrange.wattnode.config.ConfigurationException;
@@ -24,42 +26,46 @@ public class WattNodeService {
             s.configure(args[0]);
             s.start();
             s.run();
-        }
-        catch (ConfigurationException ex) {
-            System.out.printf("Configuration error: %s\n", ex.getMessage());
-        }
-        catch (ModbusReaderException ex) {
-            System.out.printf("Error connecting to Modbus: %s\n", ex.getMessage());
+        } catch (ConfigurationException ex) {
+            error("Configuration error: " + ex.getMessage(), ex);
+        } catch (ModbusReaderException ex) {
+            error("Error connecting to Modbus: " + ex.getMessage(), ex);
         }
     }
 
-    /** 
+    /**
      * Default private constructor
      */
     private WattNodeService() {
     }
 
-    /** 
-     * Configure the application. 
+    /**
+     * Configure the application.
+     *
      * @param fileName The configuration file to parse.
-     * @throws ConfigurationException Indicates there is a error in the configuration. 
+     * @throws ConfigurationException Indicates there is a error in the
+     * configuration.
      */
     private void configure(String fileName) throws ConfigurationException {
         this.config = Configuration.readConfiguration(fileName);
     }
 
-    /** 
-     * Start the service. 
-     * @throws ServiceException 
+    /**
+     * Start the service.
+     *
+     * @throws ServiceException
      */
     private void start() throws ServiceException {
+        
         running = true;
         startMqtt();
         startModbus();
-        say("service started");
+        info("service started");
     }
 
-    /** Connect to the MQTT broker */
+    /**
+     * Connect to the MQTT broker
+     */
     private void startMqtt() {
         mqtt = new MqttWriter(String.format("tcp://%s:%d", config.getMqtt().getBroker().getHost(), config.getMqtt().getBroker().getPort()), this);
         mqtt.start();
@@ -77,19 +83,19 @@ public class WattNodeService {
 
             @Override
             public void error(Throwable e) {
-                WattNodeService.this.error(e);
+                WattNodeService.error(e.getMessage(), e);
             }
         });
         mbus.setPollInterval(config.getModbus().getPollInterval());
         mbus.start();
-       
+
     }
 
     private void run() {
-        say("service running");
+        info("service running");
         for (Register reg : config.getRegisters()) {
             mbus.addRegister(reg);
-            say("reg: " + reg.getName());
+            debug("reg: " + reg.getName());
         }
         while (running) {
             try {
@@ -97,26 +103,23 @@ public class WattNodeService {
             } catch (InterruptedException ex) {
             }
         }
-        say("service stopping");
+        info("service stopping");
     }
 
-    void error(String fmt, Object... args) {
-        say(fmt, args);
+    static void debug(String fmt, Object... args) {
+        logger.finest(String.format(fmt, args));
     }
 
-    void error(Throwable ex) {
-        ex.printStackTrace();
+    static void info(String fmt, Object... args) {
+        logger.info(String.format(fmt, args));
     }
 
-    /**
-     * talk to the user, log or whatever
-     */
-    void say(String fmt, Object... args) {
-        String msg = String.format(getName() + " " + fmt, args);
-        if (!msg.endsWith("\n")) {
-            msg = msg + "\n";
-        }
-        System.out.print(msg);
+    static void warn(String fmt, Object... args) {
+        logger.warning(String.format(fmt, args));
+    }
+
+    static void error(String msg, Throwable ex) {
+        logger.log(Level.SEVERE, msg, ex);
     }
 
     String getName() {
@@ -127,5 +130,6 @@ public class WattNodeService {
     private MqttWriter mqtt;
     private ModbusReader mbus;
     private Configuration config;
-    
+    private static final Logger logger = Logger.getLogger(WattNodeService.class.getName());
+
 }
