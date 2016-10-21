@@ -19,7 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 import me.legrange.modbus.ModbusError;
 import me.legrange.modbus.ModbusException;
-import me.legrange.modbus.RequestFrame;
+import me.legrange.modbus.ReadInputRegisters;
 import me.legrange.modbus.ResponseFrame;
 import me.legrange.modbus.SerialModbusPort;
 import me.legrange.wattnode.config.Register;
@@ -70,7 +70,7 @@ public class ModbusReader implements Runnable {
             long start = System.currentTimeMillis();
             for (Register reg : registers) {
                 try {
-                    RequestFrame req = new RequestFrame(deviceId, reg.getAddress(), reg.getLength());
+                    ReadInputRegisters req = new ReadInputRegisters(deviceId, reg.getAddress(), reg.getLength());
                     ResponseFrame res = modbus.poll(req);
                     for (ModbusListener l : listeners) {
                         if (!res.isError()) {
