@@ -26,8 +26,8 @@ import me.legrange.wattnode.ServiceException;
  */
 public class ConfigurationException extends ServiceException {
 
-    public ConfigurationException(String message) {
-        super(message);
+    public ConfigurationException(String message, Object...args) {
+        super(String.format(message, args));
     }
 
     public ConfigurationException(String message, Throwable cause) {

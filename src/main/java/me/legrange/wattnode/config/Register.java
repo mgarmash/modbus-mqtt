@@ -16,8 +16,6 @@
 
 package me.legrange.wattnode.config;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import net.objecthunter.exp4j.ValidationResult;
@@ -71,7 +69,7 @@ public class Register {
         transform = new ExpressionBuilder(expr).variables("_").build().setVariable("_", 0);
         ValidationResult val = transform.validate();
         if (!val.isValid()) {
-            throw new ConfigurationException(String.format("Invalid transform '%s': %s", expr, val.getErrors()));
+            throw new ConfigurationException("Invalid transform '%s': %s", expr, val.getErrors());
         }
     }
     
@@ -95,8 +93,8 @@ public class Register {
 
     void validate() throws ConfigurationException {
         if (name == null) throw new ConfigurationException("Register name not defined");
-        if (address <= 0) throw new ConfigurationException("Register address not defined");
-        if (length <= 0) throw new ConfigurationException("Register length not defined");
+        if (address <= 0) throw new ConfigurationException("Register '%s' address not defined", name);
+        if (length <= 0) throw new ConfigurationException("Register '%s' length not defined", name);
     }
     
     private String name;
