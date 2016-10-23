@@ -15,8 +15,14 @@
  */
 package me.legrange.wattnode.modbus;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import me.legrange.modbus.ModbusError;
 import me.legrange.modbus.ModbusException;
 import me.legrange.modbus.ReadInputRegisters;
@@ -47,21 +53,21 @@ public class ModbusReader implements Runnable {
     public void addRegister(Register reg) {
         registers.add(reg);
     }
-    
+
     public void addListener(ModbusListener listener) {
         listeners.add(listener);
     }
-    
+
     public void start() {
         Thread t = new Thread(this, "Modbus poller");
         t.setDaemon(true);
         t.start();
     }
-    
-    public void stop() { 
+
+    public void stop() {
         running = false;
-        
-    } 
+
+    }
 
     @Override
     public void run() {
@@ -74,9 +80,8 @@ public class ModbusReader implements Runnable {
                     ResponseFrame res = modbus.poll(req);
                     for (ModbusListener l : listeners) {
                         if (!res.isError()) {
-                            l.received(reg, res.getWords());
-                        }
-                        else {
+                            l.received(reg, res.getBytes());
+                        } else {
                             l.error(new ModbusReaderException(String.format("Modbus error: %s", ModbusError.valueOf(res.getFunction()))));
                         }
                     }
@@ -88,7 +93,7 @@ public class ModbusReader implements Runnable {
             }
             long stop = System.currentTimeMillis();
             try {
-                Thread.sleep(pollInterval - (stop-start));
+                Thread.sleep(pollInterval - (stop - start));
             } catch (InterruptedException ex) {
             }
         }
@@ -105,5 +110,7 @@ public class ModbusReader implements Runnable {
     private SerialModbusPort modbus;
     private final List<ModbusListener> listeners = new LinkedList<>();
     private final List<Register> registers = new LinkedList<>();
+    
+//    private final Map<Integer, Map<Integer, Register>> registers = new HashMap<>();
 
 }

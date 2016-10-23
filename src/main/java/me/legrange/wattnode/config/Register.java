@@ -16,6 +16,9 @@
 
 package me.legrange.wattnode.config;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import net.objecthunter.exp4j.ValidationResult;
@@ -81,7 +84,21 @@ public class Register {
         return buf.toString();
     }
 
-    public double decode(int words[]) {
+    public double decode(byte bytes[]) {
+        switch (type) {
+            case "float" :
+                return decodeFloat(bytes);
+            default : return 0.0;
+        }
+    }
+    
+    private double decodeFloat(byte bytes[]) {
+        float f = ByteBuffer.wrap(new byte[]{bytes[2], bytes[3], bytes[0], bytes[1]}).getFloat();
+        transform.setVariable("_", f);
+        return transform.evaluate();
+    }
+    
+    private double decodeInt(int words[]) {
         long lval = 0;
         for (int i = 0; i < words.length; ++i) {
             lval = (lval << 8) | words[i];
@@ -95,6 +112,7 @@ public class Register {
         if (name == null) throw new ConfigurationException("Register name not defined");
         if (address <= 0) throw new ConfigurationException("Register '%s' address not defined", name);
         if (length <= 0) throw new ConfigurationException("Register '%s' length not defined", name);
+        if (type == null) throw new ConfigurationException("Register type not defined");
     }
     
     private String name;

@@ -76,8 +76,8 @@ public class WattNodeService {
         mbus.addListener(new ModbusListener() {
 
             @Override
-            public void received(Register reg, int words[]) {
-                double val = reg.decode(words);
+            public void received(Register reg, byte bytes[]) {
+                double val = reg.decode(bytes);
                 mqtt.publish(config.getMqtt().getTopic() + "/" + reg.getName(), Double.toString(val));
             }
 
