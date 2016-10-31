@@ -15,6 +15,7 @@
  */
 package me.legrange.wattnode;
 
+import java.util.concurrent.TimeUnit;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -28,9 +29,9 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
  * @since 1.0
  * @author Gideon le Grange https://github.com/GideonLeGrange
  */
-public class MqttConnector implements Runnable, MqttCallback {
+class MqttConnector implements Runnable, MqttCallback {
 
-    public MqttConnector(String broker, WattNodeService service) {
+    MqttConnector(String broker, WattNodeService service) {
         this.broker = broker;
         this.service = service;
     }
@@ -53,10 +54,9 @@ public class MqttConnector implements Runnable, MqttCallback {
     public void connectionLost(Throwable e) {
         WattNodeService.warn("MQTT connection lost [%s]", e.getMessage());
         long time = 2500;
-        int count = 0;
         while (!mqtt.isConnected()) {
             try {
-                Thread.sleep(time);
+                TimeUnit.MILLISECONDS.sleep(time);
                 WattNodeService.info("MQTT re-connecting");
                 mqtt.connect();
                 WattNodeService.info("MQTT re-connected");
@@ -68,13 +68,13 @@ public class MqttConnector implements Runnable, MqttCallback {
         }
     }
 
-    public void start() {
+    void start() {
         Thread t = new Thread(this, "MQTT updater");
         t.setDaemon(true);
         t.start();
     }
 
-    public void stop() {
+    void stop() {
         if (mqtt.isConnected()) {
             try {
                 mqtt.disconnect();
@@ -93,17 +93,18 @@ public class MqttConnector implements Runnable, MqttCallback {
             WattNodeService.error(ex.getMessage(), ex);
         }
     }
-
+    
     @Override
-    public void messageArrived(String string, MqttMessage mm) throws Exception {
+    public void deliveryComplete(IMqttDeliveryToken imdt) {
     }
 
     @Override
-    public void deliveryComplete(IMqttDeliveryToken imdt) {
+    public void messageArrived(String topic, MqttMessage mm) throws Exception {
     }
 
     private MqttClient mqtt;
     private final String broker;
     private final WattNodeService service;
+
 
 }

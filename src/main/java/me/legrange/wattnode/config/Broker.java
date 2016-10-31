@@ -13,18 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package me.legrange.wattnode.config;
 
 /**
  * Broker configuration.
- * 
+ *
  * @since 1.0
  * @author Gideon le Grange https://github.com/GideonLeGrange
  */
 public class Broker {
-
-    private int port;
 
     /**
      * Get the value of port
@@ -43,7 +40,6 @@ public class Broker {
     public void setPort(int port) {
         this.port = port;
     }
-    private String host;
 
     /**
      * Get the value of host
@@ -63,8 +59,16 @@ public class Broker {
         this.host = host;
     }
 
-  void validate() throws ConfigurationException { 
-        if (host == null) throw new ConfigurationException("Mqtt broker host not defined");
-        if (port <=0) throw new ConfigurationException("Mqtt broker port not defined");
+    void validate() throws ConfigurationException {
+        if ((host == null) || host.equals("")) {
+            throw new ConfigurationException("Mqtt broker host not defined");
+        }
+        if (port <= 0) {
+            throw new ConfigurationException("Mqtt broker port not defined");
+        }
     }
+
+    private int port;
+    private String host;
+
 }
