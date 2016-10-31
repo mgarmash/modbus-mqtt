@@ -2,7 +2,7 @@
 # Configure serial modbus. 
 modbus: {
     serial: { 
-        port: /dev/tty.usbserial,
+        port: /dev/ttyUSB0,
         speed: 9600
     }, 
     deviceId: 1,
