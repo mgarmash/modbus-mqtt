@@ -67,7 +67,7 @@ public class WattNodeService {
      * Connect to the MQTT broker
      */
     private void startMqtt() {
-        mqtt = new MqttWriter(String.format("tcp://%s:%d", config.getMqtt().getBroker().getHost(), config.getMqtt().getBroker().getPort()), this);
+        mqtt = new MqttConnector(String.format("tcp://%s:%d", config.getMqtt().getBroker().getHost(), config.getMqtt().getBroker().getPort()), this);
         mqtt.start();
     }
 
@@ -127,7 +127,7 @@ public class WattNodeService {
     }
 
     private boolean running;
-    private MqttWriter mqtt;
+    private MqttConnector mqtt;
     private ModbusReader mbus;
     private Configuration config;
     private static final Logger logger = Logger.getLogger(WattNodeService.class.getName());

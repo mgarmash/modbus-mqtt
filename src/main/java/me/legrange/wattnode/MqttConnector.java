@@ -15,8 +15,6 @@
  */
 package me.legrange.wattnode;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -30,9 +28,9 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
  * @since 1.0
  * @author Gideon le Grange https://github.com/GideonLeGrange
  */
-public class MqttWriter implements Runnable, MqttCallback {
+public class MqttConnector implements Runnable, MqttCallback {
 
-    public MqttWriter(String broker, WattNodeService service) {
+    public MqttConnector(String broker, WattNodeService service) {
         this.broker = broker;
         this.service = service;
     }
@@ -40,14 +38,13 @@ public class MqttWriter implements Runnable, MqttCallback {
     @Override
     public void run() {
         try {
-            running = true;
             mqtt = new MqttClient(broker, service.getName(), new MemoryPersistence());
             MqttConnectOptions opts = new MqttConnectOptions();
             opts.setCleanSession(true);
             mqtt.connect(opts);
             mqtt.setCallback(this);
         } catch (MqttException ex) {
-            Logger.getLogger(MqttWriter.class.getName()).log(Level.SEVERE, null, ex);
+            WattNodeService.error(ex.getMessage(), ex);
         }
 
     }
@@ -64,9 +61,9 @@ public class MqttWriter implements Runnable, MqttCallback {
                 mqtt.connect();
                 WattNodeService.info("MQTT re-connected");
             } catch (InterruptedException ex) {
-                Logger.getLogger(MqttWriter.class.getName()).log(Level.SEVERE, null, ex);
+                WattNodeService.error("MQTT interruption error: " + ex.getMessage(), ex);
             } catch (MqttException ex) {
-                WattNodeService.error("MQTT reconnection error: "  + ex.getMessage(), ex);
+                WattNodeService.error("MQTT reconnection error: " + ex.getMessage(), ex);
             }
         }
     }
@@ -78,13 +75,13 @@ public class MqttWriter implements Runnable, MqttCallback {
     }
 
     public void stop() {
-        running = false;
         if (mqtt.isConnected()) {
-            WattNodeService.info("MQTT disconnected");
             try {
                 mqtt.disconnect();
             } catch (MqttException ex) {
-                Logger.getLogger(MqttWriter.class.getName()).log(Level.SEVERE, null, ex);
+                WattNodeService.error(ex.getMessage(), ex);
+            } finally {
+                WattNodeService.info("MQTT disconnected");
             }
         }
     }
@@ -93,7 +90,7 @@ public class MqttWriter implements Runnable, MqttCallback {
         try {
             mqtt.publish(topic, new MqttMessage(msg.getBytes()));
         } catch (MqttException ex) {
-            Logger.getLogger(MqttWriter.class.getName()).log(Level.SEVERE, null, ex);
+            WattNodeService.error(ex.getMessage(), ex);
         }
     }
 
@@ -105,7 +102,6 @@ public class MqttWriter implements Runnable, MqttCallback {
     public void deliveryComplete(IMqttDeliveryToken imdt) {
     }
 
-    private boolean running;
     private MqttClient mqtt;
     private final String broker;
     private final WattNodeService service;
