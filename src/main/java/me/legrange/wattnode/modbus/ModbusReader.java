@@ -47,6 +47,7 @@ public class ModbusReader implements Runnable {
     }
 
     public void addRegister(Register reg) {
+        _registers.addRegister(reg);
         registers.add(reg);
     }
 
@@ -108,5 +109,5 @@ public class ModbusReader implements Runnable {
     private final List<ModbusListener> listeners = new LinkedList<>();
     private final List<Register> registers = new LinkedList<>();
     private final boolean zeroBased;
-
+    private RegisterList _registers = new RegisterList();
 }

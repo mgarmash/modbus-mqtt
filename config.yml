@@ -62,18 +62,18 @@ registers: [
         length: 2,
         type: float    
     },
-    {
+     {
+        name: currentB,
+        address: 1165,
+        length: 2,
+        type: float    
+    },   {
         name: currentA,
         address: 1163,
         length: 2,
         type: float    
     },
-    {
-        name: currentB,
-        address: 1165,
-        length: 2,
-        type: float    
-    },
+
     {
         name: currentC,
         address: 1167,
