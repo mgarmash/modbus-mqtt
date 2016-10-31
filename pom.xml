@@ -70,7 +70,7 @@
             <groupId>org.jetbrains.kotlin</groupId>  
             <artifactId>kotlin-stdlib</artifactId>  
             <version>1.0.4</version> 
-        </dependency> 
+        </dependency>
     </dependencies>  
     <properties> 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>  

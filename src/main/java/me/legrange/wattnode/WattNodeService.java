@@ -15,6 +15,8 @@
  */
 package me.legrange.wattnode;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import me.legrange.wattnode.mqtt.MqttConnector;
 import java.util.logging.Level;
@@ -34,6 +36,8 @@ import me.legrange.wattnode.mqtt.MqttListener;
  */
 public class WattNodeService {
 
+    public static final String COMMAND = "wncmd";
+
     public static void main(String[] args) throws Exception {
         WattNodeService s = new WattNodeService();
         if (args.length != 1) {
@@ -49,6 +53,30 @@ public class WattNodeService {
         } catch (ModbusReaderException ex) {
             error("Error connecting to Modbus: " + ex.getMessage(), ex);
         }
+    }
+
+    public void submit(Runnable task) {
+        pool.submit(task);
+    }
+
+    public static void debug(String fmt, Object... args) {
+        logger.finest(String.format(fmt, args));
+    }
+
+    public static void info(String fmt, Object... args) {
+        logger.info(String.format(fmt, args));
+    }
+
+    public static void warn(String fmt, Object... args) {
+        logger.warning(String.format(fmt, args));
+    }
+
+    public static void error(String msg, Throwable ex) {
+        logger.log(Level.SEVERE, msg, ex);
+    }
+
+    public String getName() {
+        return "wattnode-mqtt";
     }
 
     /**
@@ -74,11 +102,21 @@ public class WattNodeService {
      * @throws ServiceException
      */
     private void start() throws ServiceException {
-        
+
         running = true;
         startMqtt();
         startModbus();
         info("service started");
+    }
+
+    private void stop() {
+        stopMqtt();
+        stopModbus();
+        running = false;
+        synchronized (this) {
+            notify();
+        }
+        info("service stopped");
     }
 
     /**
@@ -90,12 +128,17 @@ public class WattNodeService {
             @Override
             public void received(String topic, String msg) {
                 switch (topic) {
+                    case COMMAND:
+                        switch (msg) {
+                            case "quit":
+                                stop();
+                        }
                     // FIX ME: Add cases here to do:
                     // -- modbus register writes
                     // -- service commands (shutdown, reset modem, reset mqtt)
                 }
             }
-        } );
+        });
         mqtt.start();
     }
 
@@ -119,6 +162,14 @@ public class WattNodeService {
 
     }
 
+    private void stopMqtt() {
+        mqtt.stop();
+    }
+
+    private void stopModbus() {
+        mbus.stop();
+    }
+
     private void run() {
         info("service running");
         for (Register reg : config.getRegisters()) {
@@ -127,37 +178,20 @@ public class WattNodeService {
         }
         while (running) {
             try {
-                TimeUnit.SECONDS.sleep(60);
+                synchronized (this) {
+                    wait();
+                }
             } catch (InterruptedException ex) {
             }
         }
         info("service stopping");
     }
 
-    public static void debug(String fmt, Object... args) {
-        logger.finest(String.format(fmt, args));
-    }
-
-    public static void info(String fmt, Object... args) {
-        logger.info(String.format(fmt, args));
-    }
-
-    public static void warn(String fmt, Object... args) {
-        logger.warning(String.format(fmt, args));
-    }
-
-    public static void error(String msg, Throwable ex) {
-        logger.log(Level.SEVERE, msg, ex);
-    }
-
-    public String getName() {
-        return "wattnode-mqtt";
-    }
-
     private boolean running;
     private MqttConnector mqtt;
     private ModbusReader mbus;
     private Configuration config;
+    private final ExecutorService pool = ForkJoinPool.commonPool();
     private static final Logger logger = Logger.getLogger(WattNodeService.class.getName());
 
 }

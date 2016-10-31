@@ -38,7 +38,7 @@ public class MqttConnector implements Runnable, MqttCallback {
         this.broker = broker;
         this.service = service;
     }
-    
+
     public void addListener(MqttListener listener) {
         listeners.add(listener);
     }
@@ -100,17 +100,18 @@ public class MqttConnector implements Runnable, MqttCallback {
             WattNodeService.error(ex.getMessage(), ex);
         }
     }
-    
+
     @Override
     public void deliveryComplete(IMqttDeliveryToken imdt) {
     }
 
     @Override
     public void messageArrived(String topic, MqttMessage mm) throws Exception {
-        // FIX ME change this to be async        
-        for (MqttListener l : listeners) {
-            l.received(topic, mm.toString());
-        }
+        service.submit(() -> {
+            for (MqttListener l : listeners) {
+                l.received(topic, mm.toString());
+            }
+        });
     }
 
     private MqttClient mqtt;
