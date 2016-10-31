@@ -2,11 +2,13 @@
 # Configure serial modbus. 
 modbus: {
     serial: { 
-        port: /dev/ttyUSB0,
+#        port: /dev/ttyUSB0,
+         port: /dev/tty.usbserial,
         speed: 9600
     }, 
     deviceId: 1,
-    pollInterval: 10
+    pollInterval: 10,
+    zeroBased: true
 }
 
 # Setup the MQTT broker 
@@ -26,55 +28,55 @@ mqtt: {
 registers: [
     { 
         name: frequency,
-        address: 1032,
+        address: 1033,
         length: 2,
         type: float
     },
     {
         name: voltage,
-        address: 1018,
+        address: 1019,
         length: 2,
         type: float    
     },
     {
         name: energy,
-        address: 1000,
+        address: 1001,
         length: 2,
         type: float    
     },
     {
         name: energyA,
-        address: 1100,
+        address: 1101,
         length: 2,
         type: float    
     },
     {
         name: energyB,
-        address: 1102,
+        address: 1103,
         length: 2,
         type: float    
     },
     {
         name: energyC,
-        address: 1104,
+        address: 1105,
         length: 2,
         type: float    
     },
     {
         name: currentA,
-        address: 1162,
+        address: 1163,
         length: 2,
         type: float    
     },
     {
         name: currentB,
-        address: 1164,
+        address: 1165,
         length: 2,
         type: float    
     },
     {
         name: currentC,
-        address: 1166,
+        address: 1167,
         length: 2,
         type: float    
     }

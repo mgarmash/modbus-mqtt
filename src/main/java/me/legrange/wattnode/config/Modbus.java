@@ -58,7 +58,14 @@ public class Modbus {
         this.pollInterval = pollInterval;
     }
 
-    
+    public boolean isZeroBased() {
+        return zeroBased;
+    }
+
+    public void setZeroBased(boolean zeroBased) {
+        this.zeroBased = zeroBased;
+    }
+
     void validate() throws ConfigurationException { 
         if (serial == null) throw new ConfigurationException("No serial configuration under modbus");
         serial.validate();
@@ -68,4 +75,5 @@ public class Modbus {
     private Serial serial;
     private int deviceId = 1;
     private int pollInterval = 60;
+    private boolean zeroBased = false;
 }

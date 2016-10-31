@@ -32,8 +32,9 @@ import me.legrange.wattnode.config.Register;
  */
 public class ModbusReader implements Runnable {
 
-    public ModbusReader(String port, int speed, int deviceId) throws ModbusReaderException {
+    public ModbusReader(String port, int speed, int deviceId, boolean zeroBased) throws ModbusReaderException {
         this.deviceId = deviceId;
+        this.zeroBased = zeroBased;
         try {
             initModbus(port, speed);
         } catch (ModbusException e) {
@@ -71,7 +72,8 @@ public class ModbusReader implements Runnable {
             long start = System.currentTimeMillis();
             for (Register reg : registers) {
                 try {
-                    ReadInputRegisters req = new ReadInputRegisters(deviceId, reg.getAddress(), reg.getLength());
+                    int addr = (zeroBased ? reg.getAddress() -1 : reg.getAddress());
+                    ReadInputRegisters req = new ReadInputRegisters(deviceId, addr, reg.getLength());
                     ResponseFrame res = modbus.poll(req);
                     for (ModbusListener l : listeners) {
                         if (!res.isError()) {
@@ -105,6 +107,6 @@ public class ModbusReader implements Runnable {
     private SerialModbusPort modbus;
     private final List<ModbusListener> listeners = new LinkedList<>();
     private final List<Register> registers = new LinkedList<>();
-    
+    private final boolean zeroBased;
 
 }

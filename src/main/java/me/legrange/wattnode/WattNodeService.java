@@ -17,7 +17,6 @@ package me.legrange.wattnode;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.TimeUnit;
 import me.legrange.wattnode.mqtt.MqttConnector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -143,7 +142,10 @@ public class WattNodeService {
     }
 
     private void startModbus() throws ModbusReaderException {
-        mbus = new ModbusReader(config.getModbus().getSerial().getPort(), config.getModbus().getSerial().getSpeed(), config.getModbus().getDeviceId());
+        mbus = new ModbusReader(config.getModbus().getSerial().getPort(), 
+                config.getModbus().getSerial().getSpeed(), 
+                config.getModbus().getDeviceId(),
+        config.getModbus().isZeroBased());
         mbus.addListener(new ModbusListener() {
 
             @Override
