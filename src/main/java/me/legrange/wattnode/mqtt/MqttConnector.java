@@ -13,9 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.legrange.wattnode;
+package me.legrange.wattnode.mqtt;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import me.legrange.wattnode.WattNodeService;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -29,11 +32,15 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
  * @since 1.0
  * @author Gideon le Grange https://github.com/GideonLeGrange
  */
-class MqttConnector implements Runnable, MqttCallback {
+public class MqttConnector implements Runnable, MqttCallback {
 
-    MqttConnector(String broker, WattNodeService service) {
+    public MqttConnector(String broker, WattNodeService service) {
         this.broker = broker;
         this.service = service;
+    }
+    
+    public void addListener(MqttListener listener) {
+        listeners.add(listener);
     }
 
     @Override
@@ -68,13 +75,13 @@ class MqttConnector implements Runnable, MqttCallback {
         }
     }
 
-    void start() {
+    public void start() {
         Thread t = new Thread(this, "MQTT updater");
         t.setDaemon(true);
         t.start();
     }
 
-    void stop() {
+    public void stop() {
         if (mqtt.isConnected()) {
             try {
                 mqtt.disconnect();
@@ -100,11 +107,15 @@ class MqttConnector implements Runnable, MqttCallback {
 
     @Override
     public void messageArrived(String topic, MqttMessage mm) throws Exception {
+        // FIX ME change this to be async        
+        for (MqttListener l : listeners) {
+            l.received(topic, mm.toString());
+        }
     }
 
     private MqttClient mqtt;
     private final String broker;
     private final WattNodeService service;
-
+    private final List<MqttListener> listeners = new LinkedList<>();
 
 }

@@ -17,6 +17,7 @@ package me.legrange.wattnode.modbus;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import me.legrange.modbus.ModbusError;
 import me.legrange.modbus.ModbusException;
 import me.legrange.modbus.ReadInputRegisters;
@@ -87,7 +88,7 @@ public class ModbusReader implements Runnable {
             }
             long stop = System.currentTimeMillis();
             try {
-                Thread.sleep(pollInterval - (stop - start));
+                TimeUnit.MILLISECONDS.sleep(pollInterval - (stop - start));
             } catch (InterruptedException ex) {
             }
         }
@@ -105,6 +106,5 @@ public class ModbusReader implements Runnable {
     private final List<ModbusListener> listeners = new LinkedList<>();
     private final List<Register> registers = new LinkedList<>();
     
-//    private final Map<Integer, Map<Integer, Register>> registers = new HashMap<>();
 
 }

@@ -15,6 +15,8 @@
  */
 package me.legrange.wattnode;
 
+import java.util.concurrent.TimeUnit;
+import me.legrange.wattnode.mqtt.MqttConnector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import me.legrange.wattnode.modbus.ModbusReader;
@@ -23,6 +25,7 @@ import me.legrange.wattnode.config.ConfigurationException;
 import me.legrange.wattnode.config.Register;
 import me.legrange.wattnode.modbus.ModbusListener;
 import me.legrange.wattnode.modbus.ModbusReaderException;
+import me.legrange.wattnode.mqtt.MqttListener;
 
 /**
  *
@@ -83,6 +86,16 @@ public class WattNodeService {
      */
     private void startMqtt() {
         mqtt = new MqttConnector(String.format("tcp://%s:%d", config.getMqtt().getBroker().getHost(), config.getMqtt().getBroker().getPort()), this);
+        mqtt.addListener(new MqttListener() {
+            @Override
+            public void received(String topic, String msg) {
+                switch (topic) {
+                    // FIX ME: Add cases here to do:
+                    // -- modbus register writes
+                    // -- service commands (shutdown, reset modem, reset mqtt)
+                }
+            }
+        } );
         mqtt.start();
     }
 
@@ -114,30 +127,30 @@ public class WattNodeService {
         }
         while (running) {
             try {
-                Thread.sleep(60000);
+                TimeUnit.SECONDS.sleep(60);
             } catch (InterruptedException ex) {
             }
         }
         info("service stopping");
     }
 
-    static void debug(String fmt, Object... args) {
+    public static void debug(String fmt, Object... args) {
         logger.finest(String.format(fmt, args));
     }
 
-    static void info(String fmt, Object... args) {
+    public static void info(String fmt, Object... args) {
         logger.info(String.format(fmt, args));
     }
 
-    static void warn(String fmt, Object... args) {
+    public static void warn(String fmt, Object... args) {
         logger.warning(String.format(fmt, args));
     }
 
-    static void error(String msg, Throwable ex) {
+    public static void error(String msg, Throwable ex) {
         logger.log(Level.SEVERE, msg, ex);
     }
 
-    String getName() {
+    public String getName() {
         return "wattnode-mqtt";
     }
 
