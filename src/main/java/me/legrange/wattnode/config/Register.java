@@ -16,7 +16,7 @@
 
 package me.legrange.wattnode.config;
 
-import java.nio.ByteBuffer;
+import me.legrange.wattnode.modbus.ModbusRegister;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import net.objecthunter.exp4j.ValidationResult;
@@ -26,8 +26,9 @@ import net.objecthunter.exp4j.ValidationResult;
  * @since 1.0
  * @author Gideon le Grange https://github.com/GideonLeGrange
  */
-public class Register {
+public class Register implements ModbusRegister {
 
+    @Override
     public String getName() {
         return name;
     }
@@ -36,6 +37,7 @@ public class Register {
         this.name = name;
     }
 
+    @Override
     public int getAddress() {
         return address;
     }
@@ -44,6 +46,7 @@ public class Register {
         this.address = address;
     }
 
+    @Override
     public int getLength() {
         return length;
     }
@@ -52,17 +55,28 @@ public class Register {
         this.length = length;
     }
 
-    public String getTransform() {
-        return transform.toString();
+    @Override
+    public Expression getTransform() {
+        return transform;
     }
 
  
-    public String getType() {
+    @Override
+    public Type getType() {
         return type;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setType(String type) throws ConfigurationException {
+        switch (type) {
+            case "float" :
+                this.type = Type.FLOAT;
+                break;
+            case "int" :
+                this.type = Type.INT;
+                break;
+            default :
+                throw new ConfigurationException("Unknown type '%s' for register", type);
+        }
     }
     
       
@@ -82,30 +96,6 @@ public class Register {
         return buf.toString();
     }
 
-    public double decode(byte bytes[]) {
-        switch (type) {
-            case "float" :
-                return decodeFloat(bytes);
-            default : return 0.0;
-        }
-    }
-    
-    private double decodeFloat(byte bytes[]) {
-        float f = ByteBuffer.wrap(new byte[]{bytes[2], bytes[3], bytes[0], bytes[1]}).getFloat();
-        transform.setVariable("_", f);
-        return transform.evaluate();
-    }
-    
-    private double decodeInt(int words[]) {
-        long lval = 0;
-        for (int i = 0; i < words.length; ++i) {
-            lval = (lval << 8) | words[i];
-        }
-        transform.setVariable("_", lval);
-        return transform.evaluate();
-    }
-
-
     void validate() throws ConfigurationException {
         if (name == null) throw new ConfigurationException("Register name not defined");
         if (address <= 0) throw new ConfigurationException("Register '%s' address not defined", name);
@@ -116,7 +106,7 @@ public class Register {
     private String name;
     private int address;
     private int length;
-    private String type;
+    private Type type;
     private Expression transform = new ExpressionBuilder("_").variables("_").build().setVariable("_", 0);
 
 }

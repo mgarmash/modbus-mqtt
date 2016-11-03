@@ -26,6 +26,7 @@ import me.legrange.wattnode.config.ConfigurationException;
 import me.legrange.wattnode.config.Register;
 import me.legrange.wattnode.modbus.ModbusListener;
 import me.legrange.wattnode.modbus.ModbusReaderException;
+import me.legrange.wattnode.modbus.ModbusRegister;
 import me.legrange.wattnode.mqtt.MqttListener;
 
 /**
@@ -150,7 +151,7 @@ public class WattNodeService {
 
             @Override
             public void received(Register reg, byte bytes[]) {
-                double val = reg.decode(bytes);
+                double val = ModbusRegister.decode(reg, bytes);
                 mqtt.publish(config.getMqtt().getTopic() + "/" + reg.getName(), Double.toString(val));
             }
 
