@@ -16,8 +16,6 @@
 
 package me.legrange.wattnode.modbus;
 
-import me.legrange.wattnode.config.Register;
-
 /**
  *
  * @since 1.0
@@ -25,7 +23,7 @@ import me.legrange.wattnode.config.Register;
  */
 public interface ModbusListener {
     
-    void received(Register reg, byte bytes[]);
+    void received(ModbusRegister reg, byte bytes[]);
     
     void error(Throwable e);
 

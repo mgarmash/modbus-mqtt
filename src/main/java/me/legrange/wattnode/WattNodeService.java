@@ -23,7 +23,6 @@ import java.util.logging.Logger;
 import me.legrange.wattnode.modbus.ModbusReader;
 import me.legrange.wattnode.config.Configuration;
 import me.legrange.wattnode.config.ConfigurationException;
-import me.legrange.wattnode.config.Register;
 import me.legrange.wattnode.modbus.ModbusListener;
 import me.legrange.wattnode.modbus.ModbusReaderException;
 import me.legrange.wattnode.modbus.ModbusRegister;
@@ -150,7 +149,7 @@ public class WattNodeService {
         mbus.addListener(new ModbusListener() {
 
             @Override
-            public void received(Register reg, byte bytes[]) {
+            public void received(ModbusRegister reg, byte bytes[]) {
                 double val = ModbusRegister.decode(reg, bytes);
                 mqtt.publish(config.getMqtt().getTopic() + "/" + reg.getName(), Double.toString(val));
             }
@@ -175,7 +174,7 @@ public class WattNodeService {
 
     private void run() {
         info("service running");
-        for (Register reg : config.getRegisters()) {
+        for (ModbusRegister reg : config.getRegisters()) {
             mbus.addRegister(reg);
             debug("reg: " + reg.getName());
         }

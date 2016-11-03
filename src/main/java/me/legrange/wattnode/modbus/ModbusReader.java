@@ -23,7 +23,6 @@ import me.legrange.modbus.ModbusException;
 import me.legrange.modbus.ReadInputRegisters;
 import me.legrange.modbus.ResponseFrame;
 import me.legrange.modbus.SerialModbusPort;
-import me.legrange.wattnode.config.Register;
 
 /**
  *
@@ -46,7 +45,7 @@ public class ModbusReader implements Runnable {
         this.pollInterval = interval * 1000;
     }
 
-    public void addRegister(Register reg) {
+    public void addRegister(ModbusRegister reg) {
         registers.add(reg);
     }
 
@@ -70,7 +69,7 @@ public class ModbusReader implements Runnable {
         running = true;
         while (running) {
             long start = System.currentTimeMillis();
-            for (Register reg : registers) {
+            for (ModbusRegister reg : registers) {
                 try {
                     int addr = (zeroBased ? reg.getAddress() -1 : reg.getAddress());
                     ReadInputRegisters req = new ReadInputRegisters(deviceId, addr, reg.getLength());
@@ -106,6 +105,6 @@ public class ModbusReader implements Runnable {
     private int deviceId;
     private SerialModbusPort modbus;
     private final List<ModbusListener> listeners = new LinkedList<>();
-    private final List<Register> registers = new LinkedList<>();
+    private final List<ModbusRegister> registers = new LinkedList<>();
     private final boolean zeroBased;
 }
