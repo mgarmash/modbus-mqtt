@@ -23,10 +23,14 @@ import java.util.logging.Logger;
 import me.legrange.wattnode.modbus.ModbusReader;
 import me.legrange.wattnode.config.Configuration;
 import me.legrange.wattnode.config.ConfigurationException;
+import me.legrange.wattnode.config.Register;
 import me.legrange.wattnode.modbus.ModbusListener;
 import me.legrange.wattnode.modbus.ModbusReaderException;
 import me.legrange.wattnode.modbus.ModbusRegister;
 import me.legrange.wattnode.mqtt.MqttListener;
+import net.objecthunter.exp4j.Expression;
+import net.objecthunter.exp4j.ExpressionBuilder;
+import net.objecthunter.exp4j.ValidationResult;
 
 /**
  *
@@ -142,10 +146,10 @@ public class WattNodeService {
     }
 
     private void startModbus() throws ModbusReaderException {
-        mbus = new ModbusReader(config.getModbus().getSerial().getPort(), 
-                config.getModbus().getSerial().getSpeed(), 
+        mbus = new ModbusReader(config.getModbus().getSerial().getPort(),
+                config.getModbus().getSerial().getSpeed(),
                 config.getModbus().getDeviceId(),
-        config.getModbus().isZeroBased());
+                config.getModbus().isZeroBased());
         mbus.addListener(new ModbusListener() {
 
             @Override
@@ -174,8 +178,8 @@ public class WattNodeService {
 
     private void run() {
         info("service running");
-        for (ModbusRegister reg : config.getRegisters()) {
-            mbus.addRegister(reg);
+        for (Register reg : config.getRegisters()) {
+            mbus.addRegister(makeRegister(reg));
             debug("reg: " + reg.getName());
         }
         while (running) {
@@ -187,6 +191,47 @@ public class WattNodeService {
             }
         }
         info("service stopping");
+    }
+
+    private ModbusRegister makeRegister(final Register reg) {
+        return new ModbusRegister() {
+            @Override
+            public String getName() {
+                return reg.getName();
+            }
+
+            @Override
+            public int getAddress() {
+                return reg.getAddress();
+            }
+
+            @Override
+            public int getLength() {
+                return reg.getLength();
+            }
+
+            @Override
+            public Expression getTransform() {
+                Expression transform = new ExpressionBuilder(reg.getTransform()).variables("_").build().setVariable("_", 0);
+                ValidationResult val = transform.validate();
+                if (!val.isValid()) {
+                    throw new RuntimeException(String.format("Invalid transform '%s': %s", reg.getTransform(), val.getErrors()));
+                }
+                return transform;
+            }
+
+            @Override
+            public ModbusRegister.Type getType() {
+                switch (reg.getType()) {
+                    case "float":
+                        return Type.FLOAT;
+                    case "int":
+                        return Type.INT;
+                    default:
+                        throw new RuntimeException("Unknown register type '" + reg.getType() + "'");
+                }
+            }
+        };
     }
 
     private boolean running;

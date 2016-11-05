@@ -26,9 +26,8 @@ import net.objecthunter.exp4j.ValidationResult;
  * @since 1.0
  * @author Gideon le Grange https://github.com/GideonLeGrange
  */
-public class Register implements ModbusRegister {
+public class Register {
 
-    @Override
     public String getName() {
         return name;
     }
@@ -37,7 +36,6 @@ public class Register implements ModbusRegister {
         this.name = name;
     }
 
-    @Override
     public int getAddress() {
         return address;
     }
@@ -46,7 +44,6 @@ public class Register implements ModbusRegister {
         this.address = address;
     }
 
-    @Override
     public int getLength() {
         return length;
     }
@@ -55,47 +52,23 @@ public class Register implements ModbusRegister {
         this.length = length;
     }
 
-    @Override
-    public Expression getTransform() {
+    public String getTransform() {
         return transform;
     }
 
- 
-    @Override
-    public Type getType() {
+    public String getType() {
         return type;
     }
 
     public void setType(String type) throws ConfigurationException {
-        switch (type) {
-            case "float" :
-                this.type = Type.FLOAT;
-                break;
-            case "int" :
-                this.type = Type.INT;
-                break;
-            default :
-                throw new ConfigurationException("Unknown type '%s' for register", type);
-        }
+        this.type = type;
     }
     
       
     public void setTransform(String expr) throws ConfigurationException {
-        transform = new ExpressionBuilder(expr).variables("_").build().setVariable("_", 0);
-        ValidationResult val = transform.validate();
-        if (!val.isValid()) {
-            throw new ConfigurationException("Invalid transform '%s': %s", expr, val.getErrors());
-        }
+        this.transform = transform;
     }
-    
-        static String hexString(int data[]) {
-        StringBuilder buf = new StringBuilder();
-        for (int b : data) {
-            buf.append(String.format("%04x ", b));
-        }
-        return buf.toString();
-    }
-
+ 
     void validate() throws ConfigurationException {
         if (name == null) throw new ConfigurationException("Register name not defined");
         if (address <= 0) throw new ConfigurationException("Register '%s' address not defined", name);
@@ -106,7 +79,7 @@ public class Register implements ModbusRegister {
     private String name;
     private int address;
     private int length;
-    private Type type;
-    private Expression transform = new ExpressionBuilder("_").variables("_").build().setVariable("_", 0);
+    private String type;
+    private String transform = "_";
 
 }

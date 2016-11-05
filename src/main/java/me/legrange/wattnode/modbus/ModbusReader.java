@@ -47,6 +47,7 @@ public class ModbusReader implements Runnable {
 
     public void addRegister(ModbusRegister reg) {
         registers.add(reg);
+        polls = null;
     }
 
     public void addListener(ModbusListener listener) {
@@ -61,7 +62,6 @@ public class ModbusReader implements Runnable {
 
     public void stop() {
         running = false;
-
     }
 
     @Override
@@ -69,18 +69,20 @@ public class ModbusReader implements Runnable {
         running = true;
         while (running) {
             long start = System.currentTimeMillis();
-            for (ModbusRegister reg : registers) {
+            List<Poll> polls = getPolls();
+            for (Poll poll : polls) {
                 try {
-                    int addr = (zeroBased ? reg.getAddress() -1 : reg.getAddress());
-                    ReadInputRegisters req = new ReadInputRegisters(deviceId, addr, reg.getLength());
+                    int addr = (zeroBased ? poll.getAddress() - 1 : poll.getAddress());
+                    ReadInputRegisters req = new ReadInputRegisters(deviceId, addr, poll.getSize());
                     ResponseFrame res = modbus.poll(req);
                     for (ModbusListener l : listeners) {
                         if (!res.isError()) {
-                            l.received(reg, res.getBytes());
+                            poll.applyBytes(res.getBytes(), l);
                         } else {
                             l.error(new ModbusReaderException(String.format("Modbus error: %s", ModbusError.valueOf(res.getFunction()))));
                         }
                     }
+
                 } catch (ModbusException ex) {
                     for (ModbusListener l : listeners) {
                         l.error(new ModbusReaderException(ex.getMessage(), ex));
@@ -96,6 +98,13 @@ public class ModbusReader implements Runnable {
 
     }
 
+    private List<Poll> getPolls() {
+        if (polls == null) {
+            polls = Poll.generatePolls(registers);
+        }
+        return polls;
+    }
+
     private void initModbus(String port, int speed) throws ModbusException {
         modbus = SerialModbusPort.open(port, speed);
     }
@@ -106,5 +115,6 @@ public class ModbusReader implements Runnable {
     private SerialModbusPort modbus;
     private final List<ModbusListener> listeners = new LinkedList<>();
     private final List<ModbusRegister> registers = new LinkedList<>();
+    private List<Poll> polls = null;
     private final boolean zeroBased;
 }
