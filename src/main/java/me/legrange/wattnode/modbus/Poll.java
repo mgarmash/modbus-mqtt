@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 /**
  * A modbus poll operation. 
@@ -51,14 +50,16 @@ class Poll {
         return size;
     };
     
+    /** call listener.received() for each register and it's subset of bytes in the response received 
+     * 
+     * @param bytes The bytes received for all registers polled. 
+     * @param listener The listener to call. 
+     */
     void applyBytes(byte bytes[], ModbusListener listener) {
-        registers.keySet().stream().map((offset) -> registers.get(offset)).forEach(new Consumer<ModbusRegister>() {
-            @Override
-            public void accept(ModbusRegister reg) {
-                byte buf[] = new byte[reg.getLength()*2];
-                System.arraycopy(bytes, (reg.getAddress() - address)*2, buf, 0, reg.getLength()*2);
-                listener.received(reg, buf);
-            }
+        registers.keySet().stream().map((offset) -> registers.get(offset)).forEach((ModbusRegister reg) -> {
+            byte buf[] = new byte[reg.getLength()*2];
+            System.arraycopy(bytes, (reg.getAddress() - address)*2, buf, 0, reg.getLength()*2);
+            listener.received(reg, buf);
         });
     }
     
@@ -75,7 +76,6 @@ class Poll {
                 result.add(poll);
             }
         }
-        System.out.println("Reduced " + registers.size() + " registers to " + result.size() + " polls");
         return result;
     }
     
