@@ -37,12 +37,10 @@ import net.objecthunter.exp4j.ValidationResult;
  * @since 1.0
  * @author Gideon le Grange https://github.com/GideonLeGrange
  */
-public class WattNodeService {
-
-    public static final String COMMAND = "wncmd";
+public class ModbusMqttService {
 
     public static void main(String[] args) throws Exception {
-        WattNodeService s = new WattNodeService();
+        ModbusMqttService s = new ModbusMqttService();
         if (args.length != 1) {
             System.out.println("Confiugration file name required");
             System.exit(-1);
@@ -79,13 +77,13 @@ public class WattNodeService {
     }
 
     public String getName() {
-        return "wattnode-mqtt";
+        return "modbus-mqtt";
     }
 
     /**
      * Default private constructor
      */
-    private WattNodeService() {
+    private ModbusMqttService() {
     }
 
     /**
@@ -157,7 +155,7 @@ public class WattNodeService {
 
             @Override
             public void error(Throwable e) {
-                WattNodeService.error(e.getMessage(), e);
+                ModbusMqttService.error(e.getMessage(), e);
             }
         });
         mbus.setPollInterval(config.getModbus().getPollInterval());
@@ -236,6 +234,6 @@ public class WattNodeService {
     private ModbusReader mbus;
     private Configuration config;
     private final ExecutorService pool = ForkJoinPool.commonPool();
-    private static final Logger logger = Logger.getLogger(WattNodeService.class.getName());
+    private static final Logger logger = Logger.getLogger(ModbusMqttService.class.getName());
 
 }

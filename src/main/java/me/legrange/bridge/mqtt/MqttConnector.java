@@ -20,7 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import me.legrange.bridge.WattNodeService;
+import me.legrange.bridge.ModbusMqttService;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -36,7 +36,7 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
  */
 public class MqttConnector implements Runnable, MqttCallback {
 
-    public MqttConnector(String broker, WattNodeService service) {
+    public MqttConnector(String broker, ModbusMqttService service) {
         this.broker = broker;
         this.service = service;
     }
@@ -59,25 +59,25 @@ public class MqttConnector implements Runnable, MqttCallback {
             mqtt.connect(opts);
             mqtt.setCallback(this);
         } catch (MqttException ex) {
-            WattNodeService.error(ex.getMessage(), ex);
+            ModbusMqttService.error(ex.getMessage(), ex);
         }
 
     }
 
     @Override
     public void connectionLost(Throwable e) {
-        WattNodeService.warn("MQTT connection lost [%s]", e.getMessage());
+        ModbusMqttService.warn("MQTT connection lost [%s]", e.getMessage());
         long time = 2500;
         while (!mqtt.isConnected()) {
             try {
                 TimeUnit.MILLISECONDS.sleep(time);
-                WattNodeService.info("MQTT re-connecting");
+                ModbusMqttService.info("MQTT re-connecting");
                 mqtt.connect();
-                WattNodeService.info("MQTT re-connected");
+                ModbusMqttService.info("MQTT re-connected");
             } catch (InterruptedException ex) {
-                WattNodeService.error("MQTT interruption error: " + ex.getMessage(), ex);
+                ModbusMqttService.error("MQTT interruption error: " + ex.getMessage(), ex);
             } catch (MqttException ex) {
-                WattNodeService.error("MQTT reconnection error: " + ex.getMessage(), ex);
+                ModbusMqttService.error("MQTT reconnection error: " + ex.getMessage(), ex);
             }
         }
     }
@@ -93,9 +93,9 @@ public class MqttConnector implements Runnable, MqttCallback {
             try {
                 mqtt.disconnect();
             } catch (MqttException ex) {
-                WattNodeService.error(ex.getMessage(), ex);
+                ModbusMqttService.error(ex.getMessage(), ex);
             } finally {
-                WattNodeService.info("MQTT disconnected");
+                ModbusMqttService.info("MQTT disconnected");
             }
         }
     }
@@ -104,7 +104,7 @@ public class MqttConnector implements Runnable, MqttCallback {
         try {
             mqtt.publish(topic, new MqttMessage(msg.getBytes()));
         } catch (MqttException ex) {
-            WattNodeService.error(ex.getMessage(), ex);
+            ModbusMqttService.error(ex.getMessage(), ex);
         }
     }
 
@@ -126,7 +126,7 @@ public class MqttConnector implements Runnable, MqttCallback {
 
     private MqttClient mqtt;
     private final String broker;
-    private final WattNodeService service;
+    private final ModbusMqttService service;
     private final Map<String, List<MqttListener>> listeners = new HashMap<>();
 
 }
