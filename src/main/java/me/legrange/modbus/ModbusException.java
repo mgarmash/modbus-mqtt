@@ -13,19 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.legrange.wattnode.mqtt;
+
+package me.legrange.modbus;
 
 /**
- *
- * @author gideon
+ * Thrown by the Modbus library if there an error while handling Modbus. Different implementations
+ * signal different error conditions. 
+ * 
+ * @since 1.0
+ * @author Gideon le Grange https://github.com/GideonLeGrange
  */
-public interface MqttListener {
-    
-    /** A message was received from the MQTT bus
-     * 
-     * @param topic The topic for which the message was received. 
-     * @param msg The message text. 
-     */
-    void received(String topic, String msg);
- 
+public class ModbusException extends Exception {
+
+    public ModbusException(String message) {
+        super(message);
+    }
+
+    public ModbusException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
 }

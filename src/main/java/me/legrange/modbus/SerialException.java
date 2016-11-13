@@ -13,19 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.legrange.wattnode.mqtt;
+
+package me.legrange.modbus;
 
 /**
- *
- * @author gideon
+ * Thrown if there a problem with the Modbus serial port. 
+ * 
+ * @since 1.0
+ * @author Gideon le Grange https://github.com/GideonLeGrange
  */
-public interface MqttListener {
+public class SerialException extends ModbusException {
+
+    public SerialException(String message) {
+        super(message);
+    }
+
+    public SerialException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
     
-    /** A message was received from the MQTT bus
-     * 
-     * @param topic The topic for which the message was received. 
-     * @param msg The message text. 
-     */
-    void received(String topic, String msg);
- 
 }

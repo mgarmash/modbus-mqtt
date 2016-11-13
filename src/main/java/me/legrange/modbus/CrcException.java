@@ -1,6 +1,3 @@
-
-import java.nio.ByteBuffer;
-
 /*
  * Copyright 2016 gideon.
  *
@@ -17,18 +14,19 @@ import java.nio.ByteBuffer;
  * limitations under the License.
  */
 
+package me.legrange.modbus;
+
 /**
- *
+ * Thrown if a Modbus packet contains a CRC error. 
+ * 
  * @since 1.0
  * @author Gideon le Grange https://github.com/GideonLeGrange
  */
-public class test {
+class CrcException extends ModbusException {
 
-    public static void main(String...args) {
-      //  byte b[] = new byte[]{-28, -21, 0x42, 0x47 };
-        byte b[] = new byte[]{ 0x42, 0x47, -28, -21 };
-        float f = ByteBuffer.wrap(b).getFloat();
-        System.out.println(" f =  " + f);
+    public CrcException(String message) {
+        super(message);
     }
     
+
 }

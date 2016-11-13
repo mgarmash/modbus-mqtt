@@ -127,11 +127,9 @@ public class WattNodeService {
      */
     private void startMqtt() {
         mqtt = new MqttConnector(String.format("tcp://%s:%d", config.getMqtt().getBroker().getHost(), config.getMqtt().getBroker().getPort()), this);
-        mqtt.addListener(new MqttListener() {
+        mqtt.addListener(config.getMqtt().getCommandTopic(), new MqttListener() {
             @Override
             public void received(String topic, String msg) {
-                switch (topic) {
-                    case COMMAND:
                         switch (msg) {
                             case "quit":
                                 stop();
@@ -139,7 +137,6 @@ public class WattNodeService {
                     // FIX ME: Add cases here to do:
                     // -- modbus register writes
                     // -- service commands (shutdown, reset modem, reset mqtt)
-                }
             }
         });
         mqtt.start();
@@ -155,7 +152,7 @@ public class WattNodeService {
             @Override
             public void received(ModbusRegister reg, byte bytes[]) {
                 double val = ModbusRegister.decode(reg, bytes);
-                mqtt.publish(config.getMqtt().getTopic() + "/" + reg.getName(), Double.toString(val));
+                mqtt.publish(config.getMqtt().getDataTopic() + "/" + reg.getName(), Double.toString(val));
             }
 
             @Override

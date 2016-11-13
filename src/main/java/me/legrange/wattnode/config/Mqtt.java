@@ -30,20 +30,30 @@ public class Mqtt {
         this.broker = broker;
     }
 
-    public String getTopic() {
-        return topic;
+    public String getDataTopic() {
+        return dataTopic;
     }
 
-    public void setTopic(String topic) {
-        this.topic = topic;
+    public void setDataTopic(String dataTopic) {
+        this.dataTopic = dataTopic;
+    }
+
+    public String getCommandTopic() {
+        return commandTopic;
+    }
+
+    public void setCommandTopic(String commandTopic) {
+        this.commandTopic = commandTopic;
     }
   
     void validate() throws ConfigurationException { 
         if (broker == null) throw new ConfigurationException("MQTT broker not configured");
         broker.validate();
-        if ((topic == null) || topic.equals("")) throw new ConfigurationException("MQTT topic for publishing data not configured");
+        if ((dataTopic == null) || dataTopic.equals("")) throw new ConfigurationException("MQTT topic for publishing data not configured");
     }
 
     private Broker broker;
-    private String topic; 
+    private String dataTopic; 
+    private String commandTopic; 
+    
 }

@@ -15,8 +15,10 @@
  */
 package me.legrange.wattnode.mqtt;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import me.legrange.wattnode.WattNodeService;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
@@ -39,8 +41,13 @@ public class MqttConnector implements Runnable, MqttCallback {
         this.service = service;
     }
 
-    public void addListener(MqttListener listener) {
-        listeners.add(listener);
+    public void addListener(String topic, MqttListener listener) {
+        List<MqttListener> forTopic = listeners.get(topic);
+        if (forTopic == null) {
+            forTopic = new LinkedList<>();
+            listeners.put(topic, forTopic);
+        }
+        forTopic.add(listener);
     }
 
     @Override
@@ -108,8 +115,11 @@ public class MqttConnector implements Runnable, MqttCallback {
     @Override
     public void messageArrived(String topic, MqttMessage mm) throws Exception {
         service.submit(() -> {
-            for (MqttListener l : listeners) {
-                l.received(topic, mm.toString());
+            List<MqttListener> forTopic = listeners.get(topic);
+            if (forTopic != null) {
+                forTopic.stream().forEach((l) -> {
+                    l.received(topic, mm.toString());
+                });
             }
         });
     }
@@ -117,6 +127,6 @@ public class MqttConnector implements Runnable, MqttCallback {
     private MqttClient mqtt;
     private final String broker;
     private final WattNodeService service;
-    private final List<MqttListener> listeners = new LinkedList<>();
+    private final Map<String, List<MqttListener>> listeners = new HashMap<>();
 
 }

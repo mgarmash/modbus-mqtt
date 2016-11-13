@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.legrange.wattnode.mqtt;
+
+package me.legrange.modbus;
 
 /**
- *
- * @author gideon
+ * Thrown if no Modbus response is received for a request. 
+ * 
+ * @since 1.0
+ * @author Gideon le Grange https://github.com/GideonLeGrange
  */
-public interface MqttListener {
+class NoDataException extends ModbusException {
+
+    public NoDataException(String message) {
+        super(message);
+    }
+
     
-    /** A message was received from the MQTT bus
-     * 
-     * @param topic The topic for which the message was received. 
-     * @param msg The message text. 
-     */
-    void received(String topic, String msg);
- 
+
 }
