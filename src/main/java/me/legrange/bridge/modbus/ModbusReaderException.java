@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
-package me.legrange.wattnode.config;
+package me.legrange.bridge.modbus;
 
-import me.legrange.wattnode.ServiceException;
+import me.legrange.bridge.ServiceException;
 
 /**
- * Thrown if there is a problem with the application configuration. 
- * 
+ *
  * @since 1.0
  * @author Gideon le Grange https://github.com/GideonLeGrange
  */
-public class ConfigurationException extends ServiceException {
+public class ModbusReaderException extends ServiceException {
 
-    public ConfigurationException(String message, Object...args) {
-        super(String.format(message, args));
-    }
-
-    public ConfigurationException(String message, Throwable cause) {
+    public ModbusReaderException(String message, Throwable cause) {
         super(message, cause);
     }
+
+    public ModbusReaderException(String message) {
+        super(message);
+    }
     
-    
+
 }

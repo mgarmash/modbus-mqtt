@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.legrange.wattnode;
+package me.legrange.bridge;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
-import me.legrange.wattnode.mqtt.MqttConnector;
+import me.legrange.bridge.mqtt.MqttConnector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import me.legrange.wattnode.modbus.ModbusReader;
-import me.legrange.wattnode.config.Configuration;
-import me.legrange.wattnode.config.ConfigurationException;
-import me.legrange.wattnode.config.Register;
-import me.legrange.wattnode.modbus.ModbusListener;
-import me.legrange.wattnode.modbus.ModbusReaderException;
-import me.legrange.wattnode.modbus.ModbusRegister;
-import me.legrange.wattnode.mqtt.MqttListener;
+import me.legrange.bridge.modbus.ModbusReader;
+import me.legrange.bridge.config.Configuration;
+import me.legrange.bridge.config.ConfigurationException;
+import me.legrange.bridge.config.Register;
+import me.legrange.bridge.modbus.ModbusListener;
+import me.legrange.bridge.modbus.ModbusReaderException;
+import me.legrange.bridge.modbus.ModbusRegister;
+import me.legrange.bridge.mqtt.MqttListener;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import net.objecthunter.exp4j.ValidationResult;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package me.legrange.wattnode.config;
+package me.legrange.bridge.config;
 
 /**
  *

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.legrange.wattnode.modbus;
+package me.legrange.bridge.modbus;
 
 import java.nio.ByteBuffer;
 import net.objecthunter.exp4j.Expression;

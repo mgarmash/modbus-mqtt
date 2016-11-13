@@ -13,19 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.legrange.wattnode.mqtt;
+package me.legrange.bridge;
 
 /**
  *
- * @author gideon
+ * @since 1.0
+ * @author Gideon le Grange https://github.com/GideonLeGrange
  */
-public interface MqttListener {
-    
-    /** A message was received from the MQTT bus
-     * 
-     * @param topic The topic for which the message was received. 
-     * @param msg The message text. 
-     */
-    void received(String topic, String msg);
- 
+public class ServiceException extends Exception {
+
+    public ServiceException(String message) {
+        super(message);
+    }
+
+    public ServiceException(String message, Throwable cause) {
+        super(message, cause);
+    }
+   
+
 }

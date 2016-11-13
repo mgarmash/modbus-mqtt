@@ -13,22 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.legrange.wattnode;
+
+package me.legrange.bridge.config;
+
+import me.legrange.bridge.ServiceException;
 
 /**
- *
+ * Thrown if there is a problem with the application configuration. 
+ * 
  * @since 1.0
  * @author Gideon le Grange https://github.com/GideonLeGrange
  */
-public class ServiceException extends Exception {
+public class ConfigurationException extends ServiceException {
 
-    public ServiceException(String message) {
-        super(message);
+    public ConfigurationException(String message, Object...args) {
+        super(String.format(message, args));
     }
 
-    public ServiceException(String message, Throwable cause) {
+    public ConfigurationException(String message, Throwable cause) {
         super(message, cause);
     }
-   
-
+    
+    
 }

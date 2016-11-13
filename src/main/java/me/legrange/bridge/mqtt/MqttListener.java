@@ -13,27 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package me.legrange.wattnode.modbus;
+package me.legrange.bridge.mqtt;
 
 /**
  *
- * @since 1.0
- * @author Gideon le Grange https://github.com/GideonLeGrange
+ * @author gideon
  */
-public interface ModbusListener {
+public interface MqttListener {
     
-    /** A Modbus response was received
+    /** A message was received from the MQTT bus
      * 
-     * @param reg The register form which the response was received.
-     * @param bytes The response value as byte array
+     * @param topic The topic for which the message was received. 
+     * @param msg The message text. 
      */
-    void received(ModbusRegister reg, byte bytes[]);
-    
-    /** An error occurred while doing a Modbus request 
-     * 
-     * @param e The exception that occurred. 
-     */
-    void error(Throwable e);
-
+    void received(String topic, String msg);
+ 
 }

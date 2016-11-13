@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package me.legrange.wattnode.config;
+package me.legrange.bridge.config;
 
-import me.legrange.wattnode.modbus.ModbusRegister;
+import me.legrange.bridge.modbus.ModbusRegister;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import net.objecthunter.exp4j.ValidationResult;
