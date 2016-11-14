@@ -13,7 +13,7 @@
                 <configuration> 
                     <archive> 
                         <manifest> 
-                            <mainClass>me.legrange.wattnode.WattNodeService</mainClass> 
+                            <mainClass>me.legrange.bridge.ModbusMqttService</mainClass> 
                         </manifest> 
                     </archive>  
                     <descriptorRefs> 
@@ -41,7 +41,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>            
         </plugins> 
     </build>  
 

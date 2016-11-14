@@ -41,8 +41,8 @@ modbus: {
 
 Here we configure the MQTT broker to with which to communicate. The application will connect to the broker using host `192.168.1.5` and port `1883`. Two MQTT topics are specified:
 
-* data-topic - The MQTT topic to which Modbus register values read will be published. 
-* command-topic - The MQTT topic from which commands will be received. 
+* dataTopic - The MQTT topic to which Modbus register values read will be published. 
+* commandTopic - The MQTT topic from which commands will be received. 
 
 ```yaml
 # Setup the MQTT broker 
@@ -51,8 +51,8 @@ mqtt: {
         host: 192.168.1.5,
         port: 1883
     }, 
-    data-topic: wattnode1-data,
-    command-topic: wattnode1-cmd
+    dataTopic: wattnode1-data,
+    commandTopic: wattnode1-cmd
 }   
 ```
 

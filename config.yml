@@ -17,8 +17,8 @@ mqtt: {
         host: 192.168.1.5,
         port: 1883
     }, 
-    data-topic: wattnode1-data,
-    command-topic: wattnode1-cmd
+    dataTopic: wattnode1-data,
+    commandTopic: wattnode1-cmd
 }   
 
 # Define the registers to read. 
