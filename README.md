@@ -91,8 +91,8 @@ registers: [
 
 ## Running the application 
 
-The application can be started by executing the jar, for example:
+The application can be started by executing the jar and passing the name of the configuration file, for example:
 
 ```bash 
-java -jar modbus-mqtt-1.0-SNAPSHOT-jar-with-dependencies.jar
+java -jar modbus-mqtt-1.0-SNAPSHOT-jar-with-dependencies.jar config.yml
 ```
