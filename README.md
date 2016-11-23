@@ -1,7 +1,7 @@
 # modbus-mqtt
 A serial Modbus to MQTT bridge
 
-This application polls registers in a serial modbus device and publishes the values read to an MQTT topic. This can be used to publish data from a Modbus device (for example an energy meter) to MQTT for consumption by a client (for example OpenHab). 
+This application polls registers in a serial modbus device and publishes the values read to a MQTT topic. This can be used to publish data from a Modbus device (for example an energy meter) to MQTT for consumption by a client (for example OpenHab). 
 
 ## Building the application 
 
@@ -58,7 +58,7 @@ mqtt: {
 
 ### Define the modbus registers to read and publish
 
-A list of registers to poll (read) from the Modbus device each defined. Each register must contain the following:
+A list of registers to poll (read) from the Modbus device must be defined. Each register must contain the following:
 
 * name - The register name that is meant to be human readable and serves as MQTT path 
 * address - The Modbus register address
