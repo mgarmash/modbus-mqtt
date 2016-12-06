@@ -24,10 +24,13 @@ import me.legrange.bridge.modbus.ModbusReader;
 import me.legrange.bridge.config.Configuration;
 import me.legrange.bridge.config.ConfigurationException;
 import me.legrange.bridge.config.Register;
+import me.legrange.bridge.config.Slave;
 import me.legrange.bridge.modbus.ModbusListener;
 import me.legrange.bridge.modbus.ModbusReaderException;
 import me.legrange.bridge.modbus.ModbusRegister;
 import me.legrange.bridge.mqtt.MqttListener;
+import me.legrange.modbus.SerialException;
+import me.legrange.modbus.SerialModbusPort;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import net.objecthunter.exp4j.ValidationResult;
@@ -102,7 +105,7 @@ public class ModbusMqttService {
      *
      * @throws ServiceException
      */
-    private void start() throws ServiceException {
+    private void start() throws ServiceException, ModbusReaderException, SerialException {
 
         running = true;
         startMqtt();
@@ -110,7 +113,7 @@ public class ModbusMqttService {
         info("service started");
     }
 
-    private void stop() {
+    private void stop() throws SerialException {
         stopMqtt();
         stopModbus();
         running = false;
@@ -128,38 +131,51 @@ public class ModbusMqttService {
         mqtt.addListener(config.getMqtt().getCommandTopic(), new MqttListener() {
             @Override
             public void received(String topic, String msg) {
-                        switch (msg) {
-                            case "quit":
-                                stop();
-                        }
-                    // FIX ME: Add cases here to do:
-                    // -- modbus register writes
-                    // -- service commands (shutdown, reset modem, reset mqtt)
+                switch (msg) {
+                    case "quit":
+                {
+                    try {
+                        stop();
+                    } catch (SerialException ex) {
+                        error(ex.getMessage(), ex);
+                    }
+                }
+                }
+                // FIX ME: Add cases here to do:
+                // -- modbus register writes
+                // -- service commands (shutdown, reset modem, reset mqtt)
             }
         });
         mqtt.start();
     }
 
-    private void startModbus() throws ModbusReaderException {
-        mbus = new ModbusReader(config.getModbus().getSerial().getPort(),
-                config.getModbus().getSerial().getSpeed(),
-                config.getModbus().getDeviceId(),
-                config.getModbus().isZeroBased());
-        mbus.addListener(new ModbusListener() {
+    private void startModbus() throws ModbusReaderException, SerialException {
+        port = SerialModbusPort.open(config.getModbus().getSerial().getPort(),
+                config.getModbus().getSerial().getSpeed());
+        for (Slave slave : config.getSlaves()) {
+            ModbusReader mbus = new ModbusReader(port,
+                    slave.getDeviceId(),
+                    slave.isZeroBased());
+            mbus.addListener(new ModbusListener() {
 
-            @Override
-            public void received(ModbusRegister reg, byte bytes[]) {
-                double val = ModbusRegister.decode(reg, bytes);
-                mqtt.publish(config.getMqtt().getDataTopic() + "/" + reg.getName(), Double.toString(val));
-            }
+                @Override
+                public void received(ModbusRegister reg, byte bytes[]) {
+                    double val = ModbusRegister.decode(reg, bytes);
+                    mqtt.publish(config.getMqtt().getDataTopic() + "/" + reg.getName(), Double.toString(val));
+                }
 
-            @Override
-            public void error(Throwable e) {
-                ModbusMqttService.error(e.getMessage(), e);
+                @Override
+                public void error(Throwable e) {
+                    ModbusMqttService.error(e.getMessage(), e);
+                }
+            });
+            for (Register reg : slave.getRegisters()) {
+                mbus.addRegister(makeRegister(reg));
+                debug("reg: " + reg.getName());
             }
-        });
-        mbus.setPollInterval(config.getModbus().getPollInterval());
-        mbus.start();
+            mbus.setPollInterval(slave.getPollInterval());
+            mbus.start();
+        }
 
     }
 
@@ -167,16 +183,12 @@ public class ModbusMqttService {
         mqtt.stop();
     }
 
-    private void stopModbus() {
-        mbus.stop();
+    private void stopModbus() throws SerialException {
+        port.close();
     }
 
     private void run() {
         info("service running");
-        for (Register reg : config.getRegisters()) {
-            mbus.addRegister(makeRegister(reg));
-            debug("reg: " + reg.getName());
-        }
         while (running) {
             try {
                 synchronized (this) {
@@ -231,7 +243,7 @@ public class ModbusMqttService {
 
     private boolean running;
     private MqttConnector mqtt;
-    private ModbusReader mbus;
+    private SerialModbusPort port;
     private Configuration config;
     private final ExecutorService pool = ForkJoinPool.commonPool();
     private static final Logger logger = Logger.getLogger(ModbusMqttService.class.getName());

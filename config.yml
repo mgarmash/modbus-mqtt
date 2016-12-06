@@ -21,67 +21,74 @@ mqtt: {
     commandTopic: wattnode1-cmd
 }   
 
-# Define the registers to read. 
-# - The name is meant to be human readable and serves as MQTT path 
-# - The address and legnth map directly to Modbus register and length 
-# - transform (optional): a mathematical expression used to transform the received value,
-#   with '_' used to subsitute the value received from Modbus.
-registers: [
-    { 
-        name: frequency,
-        address: 1033,
-        length: 2,
-        type: float
-    },
+slaves: [
     {
-        name: voltage,
-        address: 1019,
-        length: 2,
-        type: float    
-    },
-    {
-        name: energy,
-        address: 1001,
-        length: 2,
-        type: float    
-    },
-    {
-        name: energyA,
-        address: 1101,
-        length: 2,
-        type: float    
-    },
-    {
-        name: energyB,
-        address: 1103,
-        length: 2,
-        type: float    
-    },
-    {
-        name: energyC,
-        address: 1105,
-        length: 2,
-        type: float    
-    },
-    {
-        name: currentA,
-        address: 1163,
-        length: 2,
-        type: float    
-    },
-    {
-        name: currentB,
-        address: 1165,
-        length: 2,
-        type: float    
-    },
-    {
-        name: currentC,
-        address: 1167,
-        length: 2,
-        type: float    
+        deviceId: 1,
+        pollInterval: 10,
+        zeroBased: true,
+    # Define the registers to read. 
+    # - The name is meant to be human readable and serves as MQTT path 
+    # - The address and legnth map directly to Modbus register and length 
+    # - transform (optional): a mathematical expression used to transform the received value,
+    #   with '_' used to subsitute the value received from Modbus.
+        registers: [
+            { 
+                name: frequency,
+                address: 1033,
+                length: 2,
+                type: float
+            },
+            {
+                name: voltage,
+                address: 1019,
+                length: 2,
+                type: float    
+            },
+            {
+                name: energy,
+                address: 1001,
+                length: 2,
+                type: float    
+            },
+            {
+                name: energyA,
+                address: 1101,
+                length: 2,
+                type: float    
+            },
+            {
+                name: energyB,
+                address: 1103,
+                length: 2,
+                type: float    
+            },
+            {
+                name: energyC,
+                address: 1105,
+                length: 2,
+                type: float    
+            },
+            {
+                name: currentA,
+                address: 1163,
+                length: 2,
+                type: float    
+            },
+            {
+                name: currentB,
+                address: 1165,
+                length: 2,
+                type: float    
+            },
+            {
+                name: currentC,
+                address: 1167,
+                length: 2,
+                type: float    
+            }
+
+        ]
     }
-   
 ]
 
     

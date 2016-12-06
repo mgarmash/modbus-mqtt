@@ -23,6 +23,7 @@ import gnu.io.UnsupportedCommOperationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A serial Modbus port
@@ -72,7 +73,7 @@ public class SerialModbusPort implements AutoCloseable {
         try {
             out.write(req.asBytes());
             out.flush();
-            if (debug) {
+            if (DEBUG) {
                 System.out.println(String.format("SEND: %s", FrameUtil.hexString(req.asBytes())));
             }
             int i = 10;
@@ -82,13 +83,13 @@ public class SerialModbusPort implements AutoCloseable {
                     int len = in.read(buf);
                     byte data[] = new byte[len];
                     System.arraycopy(buf, 0, data, 0, len);
-                    if (debug) {
+                    if (DEBUG) {
                         System.out.println(String.format("RECV: %s ", FrameUtil.hexString(data)));
                     }
                     return new ResponseFrame(data);
                 } else {
                     try {
-                        Thread.sleep(100);
+                        TimeUnit.MILLISECONDS.sleep(100);
                     } catch (InterruptedException ex) {
                     }
                     i--;
@@ -133,7 +134,7 @@ public class SerialModbusPort implements AutoCloseable {
             throw new SerialException(String.format("Could not find serial port '%s'", port), ex);
         }
         try {
-            com = portId.open(getClass().getSimpleName(), timeout);
+            com = portId.open(getClass().getSimpleName(), TIMEOUT);
             com.setSerialPortParams(baud, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
             com.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
             com.enableReceiveTimeout(Integer.MAX_VALUE);
@@ -153,8 +154,7 @@ public class SerialModbusPort implements AutoCloseable {
     private SerialPort port;
 
     private SerialPort com;
-    private static final int timeout = 60000;
-  //  private static final boolean debug = Boolean.valueOf(System.getProperty(SerialModbusPort.class.getPackage().getName() + ".debug", "false"));
-    private static final boolean debug = true;
+    private static final int TIMEOUT = 60000;
+    private static final boolean DEBUG = true;
 
 }
