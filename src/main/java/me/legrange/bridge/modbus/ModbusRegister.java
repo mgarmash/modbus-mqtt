@@ -26,16 +26,44 @@ public interface ModbusRegister {
     
     public enum Type { FLOAT, INT; }
     
+    /**
+     * Return the name of the register.
+     * @return The name.
+     */
     public String getName();
     
+    /** 
+     * Return the register address. 
+     * @return The address.
+     */
     public int getAddress();
+    
+    /**
+     * Return the register length in 2 byte words. 
+     * @return The length. 
+     */
     public int getLength();
 
+    /** 
+     * Return the transformation to apply to the register. 
+     * @return The transformation expression. 
+     */
     public Expression getTransform();
  
+    /** 
+     * Return the register type. 
+     * @return The typpe.
+     */
     public Type getType();
 
     
+    /** 
+     * Decode the given bytes received for the given register into a double value. 
+     * 
+     * @param reg The register for which the bytes was received. 
+     * @param bytes The bytes to decode. 
+     * @return The decoded value
+     */
     public static double decode(ModbusRegister reg, byte bytes[]) {
         switch (reg.getType()) {
             case FLOAT :
