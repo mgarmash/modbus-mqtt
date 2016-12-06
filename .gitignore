@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-
-
 # Java
 *.class
 =======
@@ -10,7 +7,7 @@
 .mtj.tmp/
 
 # Package Files #
-*.jar
+# *.jar
 *.war
 *.ear
 
