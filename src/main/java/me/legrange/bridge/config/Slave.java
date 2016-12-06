@@ -23,10 +23,20 @@ import java.util.List;
  */
 public class Slave {
 
+    private String name;
     private int deviceId = 1;
     private int pollInterval = 60;
     private boolean zeroBased = false;
     private List<Register> registers; 
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+    
     
     public int getDeviceId() {
         return deviceId;

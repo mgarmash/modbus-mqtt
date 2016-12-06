@@ -6,9 +6,6 @@ modbus: {
          port: /dev/tty.usbserial,
         speed: 9600
     }, 
-    deviceId: 1,
-    pollInterval: 10,
-    zeroBased: true
 }
 
 # Setup the MQTT broker 
@@ -17,12 +14,12 @@ mqtt: {
         host: 192.168.1.5,
         port: 1883
     }, 
-    dataTopic: wattnode1-data,
-    commandTopic: wattnode1-cmd
+    dataTopic: modbus
 }   
 
 slaves: [
     {
+        name: wattnode1,
         deviceId: 1,
         pollInterval: 10,
         zeroBased: true,

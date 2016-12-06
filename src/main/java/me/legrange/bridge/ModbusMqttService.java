@@ -153,7 +153,7 @@ public class ModbusMqttService {
         port = SerialModbusPort.open(config.getModbus().getSerial().getPort(),
                 config.getModbus().getSerial().getSpeed());
         for (Slave slave : config.getSlaves()) {
-            ModbusReader mbus = new ModbusReader(port,
+            ModbusReader mbus = new ModbusReader(port, slave.getName(),
                     slave.getDeviceId(),
                     slave.isZeroBased());
             mbus.addListener(new ModbusListener() {
@@ -161,7 +161,7 @@ public class ModbusMqttService {
                 @Override
                 public void received(ModbusRegister reg, byte bytes[]) {
                     double val = ModbusRegister.decode(reg, bytes);
-                    mqtt.publish(config.getMqtt().getDataTopic() + "/" + reg.getName(), Double.toString(val));
+                    mqtt.publish(config.getMqtt().getDataTopic() + "/" + slave.getName() + "/" + reg.getName(), Double.toString(val));
                 }
 
                 @Override
