@@ -1,7 +1,7 @@
 # modbus-mqtt
 A serial Modbus to MQTT bridge
 
-This application polls registers in a serial modbus device and publishes the values read to a MQTT topic. This can be used to publish data from a Modbus device (for example an energy meter) to MQTT for consumption by a client (for example OpenHab). 
+This application polls registers in serial modbus devices and publishes the values read to MQTT topics. This can be used to publish data from Modbus devices (for example energy meters) to MQTT for consumption by a client (for example OpenHab). 
 
 ## Building the application 
 
@@ -14,9 +14,9 @@ You need a YAML configuration file. The configuration file contains three import
 
 * modbus - Used to configure the modbus port, speed and other parameters. 
 * mqtt - Used to configure the MQTT broker. 
-* registers - Map the modbus registers into named variables published to MQTT.
+* slaves - Map the modbus slaves with their registers into named variables published to MQTT.
 
-A working example, [config.yml], is provided, and how to configure the application is best examplained by disecting this example. 
+A working example, config.yml, is provided, and how to configure the application is best examplained by disecting this example. 
 
 ### Configuring the serial modbus interface
 
@@ -34,10 +34,9 @@ modbus: {
 
 ### Configuring the MQTT broker and topic
 
-Here we configure the MQTT broker to with which to communicate. The application will connect to the broker using host `192.168.1.5` and port `1883`. Two MQTT topics are specified:
+Here we configure the MQTT broker to with which to communicate. The application will connect to the broker using host `192.168.1.5` and port `1883`. The MQTT topic to which data is published is specified:
 
 * dataTopic - The MQTT topic to which Modbus register values read will be published. 
-* commandTopic - The MQTT topic from which commands will be received. 
 
 ```yaml
 # Setup the MQTT broker 
@@ -46,8 +45,7 @@ mqtt: {
         host: 192.168.1.5,
         port: 1883
     }, 
-    dataTopic: wattnode1-data,
-    commandTopic: wattnode1-cmd
+    dataTopic: modbus-data
 }   
 ```
 
@@ -105,7 +103,7 @@ slaves: [
 
 ```
 
-In the above example, every 60 seconds registers 1101, 1103 and 1105 will be read and published as `/wattnode1/energyA`, `/wattnode1/energyB` and `/wattnode1/energyC`. They'll all be decoded as floating point values. 
+In the above example, every 60 seconds registers 1101, 1103 and 1105 will be read from modbus device 1 and published as `/wattnode1/energyA`, `/wattnode1/energyB` and `/wattnode1/energyC`. They'll all be decoded as floating point values. Modbus device one requires zero based addressing. 
 
 ## Running the application 
 
