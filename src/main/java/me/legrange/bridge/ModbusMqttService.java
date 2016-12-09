@@ -128,7 +128,7 @@ public class ModbusMqttService {
      */
     private void startMqtt() {
         mqtt = new MqttConnector(String.format("tcp://%s:%d", config.getMqtt().getBroker().getHost(), config.getMqtt().getBroker().getPort()), this);
-        mqtt.addListener(config.getMqtt().getCommandTopic(), new MqttListener() {
+/*        mqtt.addListener(config.getMqtt().getCommandTopic(), new MqttListener() {
             @Override
             public void received(String topic, String msg) {
                 switch (msg) {
@@ -145,7 +145,7 @@ public class ModbusMqttService {
                 // -- modbus register writes
                 // -- service commands (shutdown, reset modem, reset mqtt)
             }
-        });
+        }); */
         mqtt.start();
     }
 

@@ -37,14 +37,6 @@ public class Mqtt {
     public void setDataTopic(String dataTopic) {
         this.dataTopic = dataTopic;
     }
-
-    public String getCommandTopic() {
-        return commandTopic;
-    }
-
-    public void setCommandTopic(String commandTopic) {
-        this.commandTopic = commandTopic;
-    }
   
     void validate() throws ConfigurationException { 
         if (broker == null) throw new ConfigurationException("MQTT broker not configured");
@@ -54,6 +46,5 @@ public class Mqtt {
 
     private Broker broker;
     private String dataTopic; 
-    private String commandTopic; 
     
 }
