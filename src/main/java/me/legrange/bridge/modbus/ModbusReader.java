@@ -31,14 +31,11 @@ import me.legrange.modbus.SerialModbusPort;
  */
 public class ModbusReader implements Runnable {
 
-    public ModbusReader(String port, int speed, int deviceId, boolean zeroBased) throws ModbusReaderException {
+    public ModbusReader(SerialModbusPort modbus, String name, int deviceId, boolean zeroBased) throws ModbusReaderException {
+        this.name = name;
         this.deviceId = deviceId;
         this.zeroBased = zeroBased;
-        try {
-            initModbus(port, speed);
-        } catch (ModbusException e) {
-            throw new ModbusReaderException(e.getMessage(), e);
-        }
+        this.modbus = modbus;
     }
 
     public void setPollInterval(int interval) {
@@ -111,7 +108,8 @@ public class ModbusReader implements Runnable {
 
     private boolean running;
     private long pollInterval = 60000;
-    private int deviceId;
+    private String name;
+    private final int deviceId;
     private SerialModbusPort modbus;
     private final List<ModbusListener> listeners = new LinkedList<>();
     private final List<ModbusRegister> registers = new LinkedList<>();

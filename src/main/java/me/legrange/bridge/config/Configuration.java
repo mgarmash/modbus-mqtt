@@ -74,14 +74,14 @@ public class Configuration {
         this.modbus = modbus;
     }
 
-    public List<Register> getRegisters() {
-        return registers;
+    public List<Slave> getSlaves() {
+        return slaves;
     }
 
-    public void setRegisters(List<Register> registers) {
-        this.registers = registers;
+    public void setSlaves(List<Slave> slaves) {
+        this.slaves = slaves;
     }
-    
+
     void validate() throws ConfigurationException {
         if (modbus == null) {
             throw new ConfigurationException("Modbus not configured");
@@ -92,15 +92,15 @@ public class Configuration {
 
         }
         mqtt.validate();
-        if (registers == null) {
-            throw new ConfigurationException("Registers not defined");
+        if (slaves == null) {
+            throw new ConfigurationException("Slaves not defined");
         }
-        for (Register reg : registers) {
-            reg.validate();
-        }
+/*        for (Slave slave : slaves) {
+            slave.validate();
+        }*/ 
     }
     private Mqtt mqtt;
     private Modbus modbus;
-    private List<Register> registers;
+    private List<Slave> slaves;
 
 }

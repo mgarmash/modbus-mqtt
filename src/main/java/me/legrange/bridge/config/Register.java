@@ -16,11 +16,6 @@
 
 package me.legrange.bridge.config;
 
-import me.legrange.bridge.modbus.ModbusRegister;
-import net.objecthunter.exp4j.Expression;
-import net.objecthunter.exp4j.ExpressionBuilder;
-import net.objecthunter.exp4j.ValidationResult;
-
 /**
  *
  * @since 1.0
@@ -66,7 +61,7 @@ public class Register {
     
       
     public void setTransform(String expr) throws ConfigurationException {
-        this.transform = transform;
+        this.transform = expr;
     }
  
     void validate() throws ConfigurationException {
