@@ -1,0 +1,11 @@
+[Unit]
+Description=Modbus MQTT Service
+[Service]
+ExecStart=/usr/bin/java -jar /usr/local/mqtt-modbus/mqtt-modbus-complete.jar /usr/local/mqtt-modbus/config.yml
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+KillMode=process
+Type=simple
+User=pi
+[Install]
+WantedBy=multi-user.target
