@@ -95,8 +95,6 @@ slaves: [
                 length: 2,
                 type: float    
             }
-         
-
         ]
     }
 ]
