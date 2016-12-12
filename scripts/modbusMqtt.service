@@ -1,7 +1,7 @@
 [Unit]
 Description=Modbus MQTT Service
 [Service]
-ExecStart=/usr/bin/java -jar /usr/local/mqtt-modbus/modbus-mqtt-1.0-SNAPSHOT-jar-with-dependencies.jar /usr/local/mqtt-modbus/config.yml
+ExecStart=/usr/bin/java -jar /usr/local/modbus-mqtt/modbus-mqtt-1.0-SNAPSHOT-jar-with-dependencies.jar /usr/local/modbus-mqtt/config.yml
 ExecReload=/bin/kill -HUP $MAINPID
 Restart=always
 KillMode=process
