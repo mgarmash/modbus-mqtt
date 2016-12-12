@@ -27,7 +27,8 @@ public class test {
         try {
         t.start();
 //        t.write(1604, 33);
-          t.write(1652, 6);
+//          t.write(1618, 0);
+          t.poll(1618, 2);
   //      t.write(1619, 1);
 //        t.write(1620, 1);
        }
