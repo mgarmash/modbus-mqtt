@@ -41,13 +41,7 @@ slaves: [
                 length: 2,
                 type: float    
             },
-            {
-                name: energy,
-                address: 1001,
-                length: 2,
-                type: float    
-            },
-            {
+           {
                 name: energyA,
                 address: 1101,
                 length: 2,
