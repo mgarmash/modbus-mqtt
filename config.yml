@@ -2,8 +2,8 @@
 # Configure serial modbus. 
 modbus: {
     serial: { 
-#        port: /dev/ttyUSB0,
-         port: /dev/tty.usbserial,
+        port: /dev/ttyUSB0,
+#         port: /dev/tty.usbserial,
         speed: 9600
     }, 
 }
@@ -21,7 +21,7 @@ slaves: [
     {
         name: wattnode1,
         deviceId: 1,
-        pollInterval: 10,
+        pollInterval: 60,
         zeroBased: true,
     # Define the registers to read. 
     # - The name is meant to be human readable and serves as MQTT path 
