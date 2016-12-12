@@ -155,6 +155,10 @@ public class SerialModbusPort implements AutoCloseable {
 
     private SerialPort com;
     private static final int TIMEOUT = 60000;
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG;
+    
+    static {
+        DEBUG = Boolean.valueOf(System.getProperty(SerialModbusPort.class.getName() + ".debug", "false"));
+    }
 
 }
