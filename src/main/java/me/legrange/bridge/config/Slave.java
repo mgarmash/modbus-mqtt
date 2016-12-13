@@ -70,5 +70,12 @@ public class Slave {
         this.registers = registers;
     }
     
+    void validate() throws ConfigurationException { 
+        if (name == null) throw new ConfigurationException("Slave name not defined");
+        if (registers == null) throw new ConfigurationException("Slave has no registers defined");
+        for (Register reg : registers) {
+            reg.validate();
+        }
+    }
 
 }

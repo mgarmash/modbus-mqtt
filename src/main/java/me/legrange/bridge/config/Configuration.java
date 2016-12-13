@@ -95,10 +95,11 @@ public class Configuration {
         if (slaves == null) {
             throw new ConfigurationException("Slaves not defined");
         }
-/*        for (Slave slave : slaves) {
+        for (Slave slave : slaves) {
             slave.validate();
-        }*/ 
+        } 
     }
+    
     private Mqtt mqtt;
     private Modbus modbus;
     private List<Slave> slaves;
