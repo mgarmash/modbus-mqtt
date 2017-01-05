@@ -86,7 +86,7 @@ public class ModbusMqttService extends MqttService<Configuration> {
                 @Override
                 public void received(ModbusRegister reg, byte bytes[]) {
                     double val = ModbusRegister.decode(reg, bytes);
-                    publish(config.getMqtt().getPublishTopic()+ "/" + slave.getName() + "/" + reg.getName(), Double.toString(val));
+                    publish(slave.getName() + "/" + reg.getName(), Double.toString(val));
                 }
 
                 @Override
