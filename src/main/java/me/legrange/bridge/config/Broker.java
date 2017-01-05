@@ -15,6 +15,9 @@
  */
 package me.legrange.bridge.config;
 
+import me.legrange.yaml.app.config.annotation.NotBlank;
+import me.legrange.yaml.app.config.annotation.Numeric;
+
 /**
  * Broker configuration.
  *
@@ -59,16 +62,9 @@ public class Broker {
         this.host = host;
     }
 
-    void validate() throws ConfigurationException {
-        if ((host == null) || host.equals("")) {
-            throw new ConfigurationException("Mqtt broker host not defined");
-        }
-        if (port <= 0) {
-            throw new ConfigurationException("Mqtt broker port not defined");
-        }
-    }
-
+    @Numeric(min=1, max=65535)
     private int port;
+    @NotBlank
     private String host;
 
 }

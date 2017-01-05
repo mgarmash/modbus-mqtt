@@ -43,7 +43,12 @@
       <groupId>com.neuronrobotics</groupId>  
       <artifactId>nrjavaserial</artifactId>  
       <version>3.12.1</version> 
-    </dependency> 
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>mqtt-service</artifactId>
+      <version>1.0</version>
+    </dependency>
   </dependencies>  
   <properties> 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>  

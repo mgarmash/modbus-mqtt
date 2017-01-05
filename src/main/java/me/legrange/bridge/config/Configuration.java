@@ -15,46 +15,17 @@
  */
 package me.legrange.bridge.config;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
-import org.yaml.snakeyaml.Yaml;
+import me.legrange.mqtt.service.config.MqttServiceConfig;
+import me.legrange.yaml.app.config.annotation.NotEmpty;
+import me.legrange.yaml.app.config.annotation.NotNull;
 
 /**
  * Configuration generated from YAML config file.
  *
  * @author gideon
  */
-public class Configuration {
-
-    /**
-     * Read the configuration file and return a configuration object.
-     *
-     * @param fileName The file to read.
-     * @return The configuration object.
-     * @throws ConfigurationException Thrown if there is a problem reading or
-     * parsing the configuration.
-     */
-    public static Configuration readConfiguration(String fileName) throws ConfigurationException {
-        Yaml yaml = new Yaml();
-        try (InputStream in = Files.newInputStream(Paths.get(fileName))) {
-            Configuration conf = yaml.loadAs(in, Configuration.class);
-            conf.validate();
-            return conf;
-        } catch (IOException ex) {
-            throw new ConfigurationException(String.format("Error reading configuraion file '%s': %s", fileName, ex.getMessage()), ex);
-        }
-    }
-
-    public Mqtt getMqtt() {
-        return mqtt;
-    }
-
-    public void setMqtt(Mqtt mqtt) {
-        this.mqtt = mqtt;
-    }
+public class Configuration extends MqttServiceConfig {
 
     /**
      * Get the value of modbus
@@ -82,25 +53,10 @@ public class Configuration {
         this.slaves = slaves;
     }
 
-    void validate() throws ConfigurationException {
-        if (modbus == null) {
-            throw new ConfigurationException("Modbus not configured");
-        }
-        modbus.validate();
-        if (mqtt == null) {
-            throw new ConfigurationException("Mqtt not configured");
 
-        }
-        mqtt.validate();
-        if (slaves == null) {
-            throw new ConfigurationException("Slaves not defined");
-        }
-/*        for (Slave slave : slaves) {
-            slave.validate();
-        }*/ 
-    }
-    private Mqtt mqtt;
+    @NotNull
     private Modbus modbus;
+    @NotEmpty
     private List<Slave> slaves;
 
 }

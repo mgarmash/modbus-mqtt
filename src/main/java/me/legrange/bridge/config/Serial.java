@@ -16,6 +16,9 @@
 
 package me.legrange.bridge.config;
 
+import me.legrange.yaml.app.config.annotation.NotBlank;
+import me.legrange.yaml.app.config.annotation.Numeric;
+
 /**
  *
  * @since 1.0
@@ -23,7 +26,11 @@ package me.legrange.bridge.config;
  */
 public class Serial {
 
+    @Numeric(min=9600,max=38400)
     private int speed;
+    @NotBlank
+    private String port;
+
 
     /**
      * Get the value of speed
@@ -43,8 +50,6 @@ public class Serial {
         this.speed = speed;
     }
 
-    private String port;
-
     /**
      * Get the value of port
      *
@@ -63,8 +68,5 @@ public class Serial {
         this.port = port;
     }
 
-    void validate() throws ConfigurationException { 
-        if (port == null) throw new ConfigurationException("Serial port not defined");
-        if (speed <=0) throw new ConfigurationException("Serial speed not defined");
-    }
+   
 }

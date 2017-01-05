@@ -15,22 +15,16 @@
  */
 package me.legrange.bridge;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ForkJoinPool;
-import me.legrange.bridge.mqtt.MqttConnector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import me.legrange.bridge.modbus.ModbusReader;
 import me.legrange.bridge.config.Configuration;
-import me.legrange.bridge.config.ConfigurationException;
 import me.legrange.bridge.config.Register;
 import me.legrange.bridge.config.Slave;
 import me.legrange.bridge.modbus.ModbusListener;
 import me.legrange.bridge.modbus.ModbusReaderException;
 import me.legrange.bridge.modbus.ModbusRegister;
-import me.legrange.bridge.mqtt.MqttListener;
 import me.legrange.modbus.SerialException;
 import me.legrange.modbus.SerialModbusPort;
+import me.legrange.mqtt.service.MqttService;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import net.objecthunter.exp4j.ValidationResult;
@@ -40,116 +34,44 @@ import net.objecthunter.exp4j.ValidationResult;
  * @since 1.0
  * @author Gideon le Grange https://github.com/GideonLeGrange
  */
-public class ModbusMqttService {
+public class ModbusMqttService extends MqttService<Configuration> {
 
-    public static void main(String[] args) throws Exception {
-        ModbusMqttService s = new ModbusMqttService();
-        if (args.length != 1) {
-            System.out.println("Confiugration file name required");
-            System.exit(-1);
-        }
-        try {
-            s.configure(args[0]);
-            s.start();
-            s.run();
-        } catch (ConfigurationException ex) {
-            error("Configuration error: " + ex.getMessage(), ex);
-        } catch (ModbusReaderException ex) {
-            error("Error connecting to Modbus: " + ex.getMessage(), ex);
-        }
-    }
-
-    public void submit(Runnable task) {
-        pool.submit(task);
-    }
-
-    public static void debug(String fmt, Object... args) {
-        logger.finest(String.format(fmt, args));
-    }
-
-    public static void info(String fmt, Object... args) {
-        logger.info(String.format(fmt, args));
-    }
-
-    public static void warn(String fmt, Object... args) {
-        logger.warning(String.format(fmt, args));
-    }
-
-    public static void error(String msg, Throwable ex) {
-        logger.log(Level.SEVERE, msg, ex);
+    public static void main(String...args) {
+        MqttService.main(args);
     }
 
     public String getName() {
         return "modbus-mqtt";
     }
 
-    /**
-     * Default private constructor
-     */
-    private ModbusMqttService() {
-    }
-
-    /**
-     * Configure the application.
-     *
-     * @param fileName The configuration file to parse.
-     * @throws ConfigurationException Indicates there is a error in the
-     * configuration.
-     */
-    private void configure(String fileName) throws ConfigurationException {
-        this.config = Configuration.readConfiguration(fileName);
-    }
 
     /**
      * Start the service.
      *
      * @throws ServiceException
      */
-    private void start() throws ServiceException, ModbusReaderException, SerialException {
-
-        running = true;
-        startMqtt();
-        startModbus();
-        info("service started");
-    }
-
-    private void stop() throws SerialException {
-        stopMqtt();
-        stopModbus();
-        running = false;
-        synchronized (this) {
-            notify();
+    @Override
+    public void start() {
+        try {
+            startModbus();
+        } catch (ModbusReaderException | SerialException ex) {
+            error(ex.getMessage(),ex);
         }
-        info("service stopped");
     }
 
-    /**
-     * Connect to the MQTT broker
-     */
-    private void startMqtt() {
-        mqtt = new MqttConnector(String.format("tcp://%s:%d", config.getMqtt().getBroker().getHost(), config.getMqtt().getBroker().getPort()), this);
-/*        mqtt.addListener(config.getMqtt().getCommandTopic(), new MqttListener() {
-            @Override
-            public void received(String topic, String msg) {
-                switch (msg) {
-                    case "quit":
-                {
-                    try {
-                        stop();
-                    } catch (SerialException ex) {
-                        error(ex.getMessage(), ex);
-                    }
-                }
-                }
-                // FIX ME: Add cases here to do:
-                // -- modbus register writes
-                // -- service commands (shutdown, reset modem, reset mqtt)
-            }
-        }); */
-        mqtt.start();
+    @Override
+    public void stop() {
+        try {
+            stopModbus();
+        } catch (SerialException ex) {
+            error(ex.getMessage(),ex);
+        }
+        super.stop();
     }
+
 
     private void startModbus() throws ModbusReaderException, SerialException {
+        Configuration config = getConfiguration();
         port = SerialModbusPort.open(config.getModbus().getSerial().getPort(),
                 config.getModbus().getSerial().getSpeed());
         for (Slave slave : config.getSlaves()) {
@@ -161,12 +83,12 @@ public class ModbusMqttService {
                 @Override
                 public void received(ModbusRegister reg, byte bytes[]) {
                     double val = ModbusRegister.decode(reg, bytes);
-                    mqtt.publish(config.getMqtt().getDataTopic() + "/" + slave.getName() + "/" + reg.getName(), Double.toString(val));
+                    publish(config.getMqtt().getPublishTopic()+ "/" + slave.getName() + "/" + reg.getName(), Double.toString(val));
                 }
 
                 @Override
                 public void error(Throwable e) {
-                    ModbusMqttService.error(e.getMessage(), e);
+                    ModbusMqttService.this.error(e.getMessage(), e);
                 }
             });
             for (Register reg : slave.getRegisters()) {
@@ -179,25 +101,8 @@ public class ModbusMqttService {
 
     }
 
-    private void stopMqtt() {
-        mqtt.stop();
-    }
-
     private void stopModbus() throws SerialException {
         port.close();
-    }
-
-    private void run() {
-        info("service running");
-        while (running) {
-            try {
-                synchronized (this) {
-                    wait();
-                }
-            } catch (InterruptedException ex) {
-            }
-        }
-        info("service stopping");
     }
 
     private ModbusRegister makeRegister(final Register reg) {
@@ -241,11 +146,11 @@ public class ModbusMqttService {
         };
     }
 
-    private boolean running;
-    private MqttConnector mqtt;
     private SerialModbusPort port;
-    private Configuration config;
-    private final ExecutorService pool = ForkJoinPool.commonPool();
-    private static final Logger logger = Logger.getLogger(ModbusMqttService.class.getName());
+
+    @Override
+    protected Class<Configuration> getConfigurationClass() {
+        return Configuration.class;
+    }
 
 }

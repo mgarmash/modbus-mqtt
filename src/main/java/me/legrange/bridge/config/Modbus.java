@@ -16,6 +16,8 @@
 
 package me.legrange.bridge.config;
 
+import me.legrange.yaml.app.config.annotation.NotNull;
+
 /**
  * Modbus configuration
  *
@@ -42,12 +44,7 @@ public class Modbus {
         this.serial = serial;
     }
 
-    void validate() throws ConfigurationException { 
-        if (serial == null) throw new ConfigurationException("No serial configuration under modbus");
-        serial.validate();
-    }
-    
-
+    @NotNull
     private Serial serial;
     
 }

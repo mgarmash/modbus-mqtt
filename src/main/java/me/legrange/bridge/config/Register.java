@@ -16,6 +16,9 @@
 
 package me.legrange.bridge.config;
 
+import me.legrange.yaml.app.config.annotation.NotBlank;
+import me.legrange.yaml.app.config.annotation.Numeric;
+
 /**
  *
  * @since 1.0
@@ -55,26 +58,24 @@ public class Register {
         return type;
     }
 
-    public void setType(String type) throws ConfigurationException {
+    public void setType(String type)  {
         this.type = type;
     }
     
       
-    public void setTransform(String expr) throws ConfigurationException {
+    public void setTransform(String expr) {
         this.transform = expr;
     }
- 
-    void validate() throws ConfigurationException {
-        if (name == null) throw new ConfigurationException("Register name not defined");
-        if (address <= 0) throw new ConfigurationException("Register '%s' address not defined", name);
-        if (length <= 0) throw new ConfigurationException("Register '%s' length not defined", name);
-        if (type == null) throw new ConfigurationException("Register type not defined");
-    }
-    
+
+    @NotBlank
     private String name;
+    @Numeric(min=1, max=65535)
     private int address;
+    @Numeric(min=1, max=8)
     private int length;
+    @NotBlank
     private String type;
+    @NotBlank
     private String transform = "_";
 
 }
