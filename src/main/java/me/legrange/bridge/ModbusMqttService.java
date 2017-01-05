@@ -25,6 +25,7 @@ import me.legrange.bridge.modbus.ModbusRegister;
 import me.legrange.modbus.SerialException;
 import me.legrange.modbus.SerialModbusPort;
 import me.legrange.mqtt.service.MqttService;
+import me.legrange.simple.app.SimpleApplicationException;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import net.objecthunter.exp4j.ValidationResult;
@@ -40,6 +41,7 @@ public class ModbusMqttService extends MqttService<Configuration> {
         MqttService.main(args);
     }
 
+    @Override
     public String getName() {
         return "modbus-mqtt";
     }
@@ -51,7 +53,8 @@ public class ModbusMqttService extends MqttService<Configuration> {
      * @throws ServiceException
      */
     @Override
-    public void start() {
+    public void start() throws SimpleApplicationException {
+        super.start();
         try {
             startModbus();
         } catch (ModbusReaderException | SerialException ex) {
