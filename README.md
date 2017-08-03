@@ -16,7 +16,7 @@ You need a YAML configuration file. The configuration file contains three import
 * mqtt - Used to configure the MQTT broker. 
 * slaves - Map the modbus slaves with their registers into named variables published to MQTT.
 
-A working example, config.yml, is provided, and how to configure the application is best examplained by disecting this example. 
+A working example, config.yml, is provided, and how to configure the application is best explained by disecting this example. 
 
 ### Configuring the serial modbus interface
 
