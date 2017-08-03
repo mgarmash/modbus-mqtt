@@ -56,7 +56,7 @@ A list of modbus slaves from which data will be read is defined. Each slave must
 * name - The name of the slave that is meant to be human readable and serves as part of the MQTT path. 
 * deviceId - The slave's unique modbus device ID. 
 * pollInterval - How often registers from the slave must be read. 
-* zeroBased - Some Modbus devices expect zero based register numbering, so when reading for example register 1201, the register address read should actually be 1200. For these devices, zeroBase must be set to true.
+* zeroBased - Some Modbus devices expect zero based register numbering, so when reading for example register 1201, the register address read should actually be 1200. For these devices, zeroBased must be set to true.
 * registers - A list of registers to read from the slave.
 
 
